@@ -1,0 +1,31 @@
+DROP TABLE dbo.Auctus_MRP_DSInfo
+DROP TABLE dbo.Auctus_MRP_DSInfoResult
+
+SELECT * INTO Auctus_MRP_DSInfo FROM dbo.MRP_DSInfo WHERE 1=0
+ALTER TABLE dbo.Auctus_MRP_DSInfo ADD EndTime DATETIME
+ALTER TABLE dbo.Auctus_MRP_DSInfo ADD CopyDate DATETIME
+ALTER TABLE dbo.Auctus_MRP_DSInfo ADD PlanCode NVARCHAR(50)
+ALTER TABLE dbo.Auctus_MRP_DSInfo ADD RN INT
+
+
+CREATE TABLE Auctus_MRP_DSInfoResult 
+(
+ID INT IDENTITY(1,1)PRIMARY KEY,
+Company NVARCHAR(255),
+PlanCode nVARCHAR(255),
+Version VARCHAR(20),
+ItemMaster BIGINT,
+Code VARCHAR(50),
+Name NVARCHAR(255),
+SPEC NVARCHAR(300),
+DocNo VARCHAR(50),
+DemandCode VARCHAR(50),
+DSType NVARCHAR(50),
+DocType NVARCHAR(50),
+DemandDate DATETIME,
+NetQty DECIMAL(18,4),
+TradeBaseQty DECIMAL(18,4),
+EndTime datetime,
+RN INT ,
+Remark NVARCHAR(MAX)
+)
