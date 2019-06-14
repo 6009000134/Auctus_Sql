@@ -2,7 +2,7 @@
 获取马来销售订单详情
 */
 
-ALTER PROC [dbo].sp_Web_GetSODetail
+ALTER PROC [dbo].[sp_Web_GetSODetail]
 (
 @PageSize int,
 @PageIndex int,
@@ -37,12 +37,14 @@ SELECT
 b.*,a.DocNo
 ,ROW_NUMBER() OVER(ORDER BY a.DocNo DESC)RN
 FROM dbo.Auctus_SO a right JOIN dbo.Auctus_SOLine b ON a.Id=b.SO
-) t WHERE t.RN>@beginIndex AND t.RN<@endIndex '
+where 1=1 '
 IF ISNULL(@DocNo,'')<>''
 BEGIN
 	--SET @sql=@sql+'AND PATINDEX('''+@U9_DocNo+''',t.U9_DocNo)>0'
-	SET @sql=@sql+'AND PATINDEX(@DocNo,t.DocNo)>0'
+	SET @sql=@sql+'AND PATINDEX(@DocNo,a.DocNo)>0'
 END 
+SET @sql=@sql+' ) t WHERE t.RN>@beginIndex AND t.RN<@endIndex  '
+
 IF ISNULL(@ID,'')<>''
 BEGIN
 	SET @sql=@sql+'AND t.SO=@ID'

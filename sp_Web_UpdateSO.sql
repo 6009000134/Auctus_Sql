@@ -6,7 +6,8 @@ AS
 BEGIN
 	IF EXISTS (SELECT 1 FROM TEMPDB.DBO.SYSOBJECTS WHERE ID = OBJECT_ID(N'TEMPDB..#TempTable') AND TYPE='U')
 	BEGIN
-		UPDATE dbo.Auctus_SO SET Customer_Name=a.Customer_Name,BusinessDate=a.BusinessDate,ModifyBy=a.ModifyBy,ModifyOn=GETDATE(),Remark=a.Remark 
+		UPDATE dbo.Auctus_SO SET Customer_Name=a.Customer_Name,BusinessDate=a.BusinessDate,ModifyBy=a.ModifyBy,ModifyOn=GETDATE(),Remark=a.Remark,Itemmaster=a.Itemmaster
+		,Code=a.Code,Name=a.Name,SPECS=a.SPECS,Qty=a.Qty
 		FROM #TempTable a WHERE Auctus_SO.ID=a.ID
 	END
 	

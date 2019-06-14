@@ -29,7 +29,7 @@ BEGIN
 		SET @DocNo=@DocStr+@DocOrder
 	END 
 	--SELECT @DocNo
-
+	
 	IF EXISTS (SELECT 1 FROM TEMPDB.DBO.SYSOBJECTS WHERE ID = OBJECT_ID(N'TEMPDB..#TempTable') AND TYPE='U')
 	BEGIN
 		INSERT INTO dbo.Auctus_SO
@@ -42,8 +42,10 @@ BEGIN
 	          CreateOn ,
 	          ModifyBy ,
 	          ModifyOn ,
-	          Remark
-	        ) SELECT @DocNo,a.Customer_Code,a.Customer_Name,a.BusinessDate,a.Operator,a.CreateBy,GETDATE(),a.ModifyBy,GETDATE(),a.Remark FROM #TempTable a			
+	          Remark,
+			  Itemmaster,
+			  Code,Name,SPECS,Qty
+	        ) SELECT @DocNo,a.Customer_Code,a.Customer_Name,a.BusinessDate,a.Operator,a.CreateBy,GETDATE(),a.ModifyBy,GETDATE(),a.Remark,a.Itemmaster,a.Code,a.Name,a.SPECS,a.Qty FROM #TempTable a			
 	END
 	
 	IF EXISTS (SELECT 1 FROM TEMPDB.DBO.SYSOBJECTS WHERE ID = OBJECT_ID(N'TEMPDB..#TempTable1') AND TYPE='U')

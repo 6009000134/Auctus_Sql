@@ -12,7 +12,12 @@ CreateBy NVARCHAR(255),
 CreateOn DATETIME,
 ModifyBy NVARCHAR(255),
 ModifyOn DATETIME,
-Remark NVARCHAR(4000)
+Remark NVARCHAR(4000),
+Itemmaster BIGINT,
+Code VARCHAR(50),
+Name NVARCHAR(300),
+SPECS NVARCHAR(600),
+Qty int
 )
 
 --SOÐÐ
