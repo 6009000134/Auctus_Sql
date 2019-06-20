@@ -1,16 +1,14 @@
 --组装线生产日报表
-alter PROC mxqh_AssemblyLineDailyReport
+alter PROC sp_Auctus_AssemblyLineDailyReport
 (
 @LineType INT,@MO_DocNo NVARCHAR(40),@SD DATETIME,@ED datetime
 )
 AS
 BEGIN
 
---DECLARE @LineType INT,@MO_DocNo NVARCHAR(40),@SD DATETIME,@ED datetime
+--DECLARE @LineType INT=8,@MO_DocNo NVARCHAR(40),@SD DATETIME='2019-01-13',@ED datetime='2019-03-15'
 IF ISNULL(@MO_DocNo,'')=''
 SET @MO_DocNo='%%';
---SET @SD='2019-01-13' 
---SET @ED='2019-03-15'
 --BSN集合临时表
 IF object_id('tempdb.dbo.#tempBSN') is NULL
 BEGIN
