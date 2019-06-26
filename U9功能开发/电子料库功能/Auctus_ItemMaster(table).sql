@@ -8,7 +8,7 @@ GO
 CREATE TABLE [dbo].[Auctus_ItemMaster](
 	[ID] [INT] IDENTITY(1,1) NOT NULL,
 	[ComponentType] [INT] NULL,
-	OrderNo int,--优选顺序
+	OrderNo VARCHAR(30),--优选顺序
 	[MainItemCategory] [VARCHAR](10) NULL,
 	[Code] [VARCHAR](50) NULL,
 	[Name] [NVARCHAR](255) NULL,
