@@ -1,0 +1,3 @@
+INSERT INTO CBO_ItemMaster
+SELECT a.ID,a.Code,a.Name,a.SPECS FROM TT.U9Test0812.dbo.CBO_Itemmaster a WHERE a.org=1001708020135665
+
