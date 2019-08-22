@@ -30,7 +30,7 @@ FROM dbo.opPlanExecutMain a INNER JOIN dbo.plAssemblyPlanDetail b ON a.AssemblyP
 
 ;WITH data1 AS
 (
-SELECT c.WorOrder,c.MaterialCode,c.MaterialName,a.Name LineName,d.TS
+SELECT c.WorOrder,c.MaterialCode,c.MaterialName,c.Quantity,a.Name LineName,d.TS
 ,CASE WHEN ISNULL(d.InternalCode,'')<>'' THEN 1 ELSE 0 END InternalCode1
 ,CASE WHEN ISNULL(e.InternalCode,'')<>'' THEN 1 ELSE 0 END InternalCode2
 ,CASE WHEN ISNULL(f.InternalCode,'')<>'' THEN 1 ELSE 0 END InternalCode3
@@ -40,7 +40,7 @@ INNER JOIN #tempBSN d ON c.ID=d.AssemblyPlanDetailID--投入数量
 LEFT JOIN dbo.baInternalAndSNCode e ON d.InternalCode=e.InternalCode--复位数量
 LEFT JOIN dbo.mxqh_baBarcodePrint f ON e.InternalCode=f.InternalCode AND e.SNCode=f.SNCode--产出数量
 )
-SELECT a.WorOrder,a.MaterialCode,a.MaterialName,a.LineName,MIN(a.TS)StartDate,MAX(a.CreateDate) EndDate
+SELECT a.WorOrder,a.MaterialCode,a.MaterialName,a.LineName,MIN(a.Quantity)Quantity,MIN(a.TS)StartDate,MAX(a.CreateDate) EndDate
 ,SUM(a.InternalCode1)InputQty,SUM(a.InternalCode2)ResetQty,SUM(a.InternalCode3)OutputQty
 FROM data1 a 
 GROUP BY a.WorOrder,a.MaterialCode,a.MaterialName,a.LineName

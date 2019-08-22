@@ -1,0 +1,2 @@
+--ALTER TABLE dbo.qlCheckMain ADD DocNo VARCHAR(50)
+--UPDATE dbo.qlCheckMain SET DocNo='OQC'+PalletCode
