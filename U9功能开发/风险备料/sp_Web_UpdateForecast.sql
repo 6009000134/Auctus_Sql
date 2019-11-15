@@ -7,7 +7,7 @@ BEGIN
 IF EXISTS (SELECT 1 FROM TEMPDB.DBO.SYSOBJECTS WHERE ID = OBJECT_ID(N'TEMPDB..#TempTable') AND TYPE='U')
 	BEGIN
 		UPDATE dbo.Auctus_Forecast SET 
-		ModifiedBy=a.ModifiedBy,ModifiedOn=GETDATE(),Customer_Name=a.Customer_Name
+		ModifiedBy=a.ModifiedBy,ModifiedOn=GETDATE(),Customer_Name=a.Customer_Name,DocType=a.DocType
 		,BusinessDate=a.BusinessDate,Remark=a.Remark FROM #TempTable a	WHERE a.ID=dbo.Auctus_Forecast.ID	
 	END
 	

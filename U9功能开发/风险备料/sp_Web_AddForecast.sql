@@ -18,6 +18,7 @@ BEGIN
 	BEGIN
 		INSERT INTO dbo.Auctus_Forecast
 	        ( DocNo ,
+			  DocType,
 	          Customer_Name ,
 	          BusinessDate ,
 	          CreatedBy ,
@@ -25,7 +26,7 @@ BEGIN
 	          ModifiedBy ,
 	          ModifiedOn ,
 	          Remark
-	        ) SELECT @DocNo,a.Customer_Name,a.BusinessDate,a.CreatedBy,GETDATE(),a.ModifiedBy,GETDATE(),a.Remark FROM #TempTable a			
+	        ) SELECT @DocNo,a.DocType,a.Customer_Name,a.BusinessDate,a.CreatedBy,GETDATE(),a.ModifiedBy,GETDATE(),a.Remark FROM #TempTable a			
 	END
 	
 	IF EXISTS (SELECT 1 FROM TEMPDB.DBO.SYSOBJECTS WHERE ID = OBJECT_ID(N'TEMPDB..#TempTable1') AND TYPE='U')

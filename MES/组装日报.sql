@@ -8,6 +8,10 @@ BEGIN
 
 --DECLARE @LineType INT=8,@MO_DocNo NVARCHAR(40),@SD DATETIME='2019-01-13',@ED datetime='2019-03-15'
 SET @MO_DocNo='%'+ISNULL(@MO_DocNo,'')+'%';
+IF ISNULL(@SD,'')=''
+SET @SD='1990-01-01'
+IF ISNULL(@ED,'')=''
+SET @ED='9990-01-01'
 --BSN集合临时表
 IF object_id('tempdb.dbo.#tempBSN') is NULL
 BEGIN
@@ -21,10 +25,20 @@ ELSE
 BEGIN
 	TRUNCATE TABLE #tempBSN
 END 
---将BSN集合保存到临时表
-INSERT INTO #tempBSN SELECT a.AssemblyPlanDetailID,a.TS,a.InternalCode 
-FROM dbo.opPlanExecutMain a INNER JOIN dbo.plAssemblyPlanDetail b ON a.AssemblyPlanDetailID=b.ID INNER JOIN dbo.plAssemblyPlan c ON b.AssemblyPlanID=c.ID
- WHERE PATINDEX(@MO_DocNo,b.WorOrder)>0 AND @LineType=c.AssemblyLineID
+IF	ISNULL(@LineType,0)=0
+BEGIN
+	--将BSN集合保存到临时表
+	INSERT INTO #tempBSN SELECT a.AssemblyPlanDetailID,a.TS,a.InternalCode 
+	FROM dbo.opPlanExecutMain a INNER JOIN dbo.plAssemblyPlanDetail b ON a.AssemblyPlanDetailID=b.ID INNER JOIN dbo.plAssemblyPlan c ON b.AssemblyPlanID=c.ID
+	WHERE PATINDEX(@MO_DocNo,b.WorOrder)>0
+END 
+ELSE
+BEGIN
+	--将BSN集合保存到临时表
+	INSERT INTO #tempBSN SELECT a.AssemblyPlanDetailID,a.TS,a.InternalCode 
+	FROM dbo.opPlanExecutMain a INNER JOIN dbo.plAssemblyPlanDetail b ON a.AssemblyPlanDetailID=b.ID INNER JOIN dbo.plAssemblyPlan c ON b.AssemblyPlanID=c.ID
+	 WHERE PATINDEX(@MO_DocNo,b.WorOrder)>0 AND @LineType=c.AssemblyLineID
+END 
 
  
 SELECT c.WorOrder,c.MaterialCode,c.MaterialName,c.Quantity,a.Name LineName,(SELECT FORMAT(MIN(TS),'yyyy-MM-dd HH:mm:ss') FROM #tempBSN ts WHERE ts.AssemblyPlanDetailID=c.ID  AND ts.TS>=@SD AND ts.TS<@ED)StartDate

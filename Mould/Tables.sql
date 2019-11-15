@@ -99,4 +99,17 @@ DataBeforeModify NVARCHAR(4000),--变更前内容
 DataAfterModify NVARCHAR(4000)--变更后内容
 )
 
+/*
+保存U9收货信息，JOB作业每日执行取数
+*/
+CREATE TABLE Mould_RCV(
+DocNo VARCHAR(50),
+DocLineNo INT,
+Org BIGINT,
+ApprovedOn DATETIME,
+ItemID BIGINT,
+RCVQtyTU DECIMAL(18,4),
+ConfirmDate DATETIME
+)
+
 

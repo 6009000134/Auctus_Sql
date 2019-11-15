@@ -10,7 +10,8 @@ DocNo VARCHAR(50),
 Customer BIGINT,
 Customer_Name NVARCHAR(255),
 BusinessDate DATETIME,
-Remark NVARCHAR(400)
+Remark NVARCHAR(400),
+DocType NVARCHAR(20)
 )
 --预测行
 CREATE TABLE Auctus_ForecastLine
@@ -31,3 +32,4 @@ DemandDate VARCHAR(20),--所属月份
 DeliveryDate DATETIME,--交期
 Remark NVARCHAR(500)
 )
+

@@ -15,7 +15,7 @@ DECLARE @endIndex INT =@pageIndex*@pageSize+1
 IF ISNULL(@DocNo,'')=''
 SET @DocNo='%%'
 
-SELECT a.ID,a.CreatedOn,a.CreatedBy,a.ModifiedBy,a.ModifiedOn,a.DocNo,a.Customer_Name,FORMAT(a.BusinessDate,'yyyy/MM/dd HH:mm:ss')BusinessDate,a.Remark FROM dbo.Auctus_Forecast a 
+SELECT a.ID,a.CreatedOn,a.CreatedBy,a.ModifiedBy,a.ModifiedOn,a.DocNo,a.DocType,a.Customer_Name,FORMAT(a.BusinessDate,'yyyy/MM/dd HH:mm:ss')BusinessDate,a.Remark FROM dbo.Auctus_Forecast a 
 WHERE PATINDEX(@DocNo,a.DocNo)>0 
 
 SELECT * FROM (
