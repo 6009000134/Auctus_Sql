@@ -35,7 +35,7 @@ BEGIN
 	--完工信息
 	SELECT MIN(t.WorkOrder)WorkOrder,MIN(t.MaterialCode)MaterialCode,MIN(t.MaterialName)MaterialName,@Quantity Quantity,COUNT(*)CompleteQty,@Quantity-COUNT(*)UnCompleteQty,MIN(t.OnLineQty)OnLineQty FROM 
 	(
-	SELECT b.WorkOrder,b.MaterialCode,b.MaterialName,ROW_NUMBER()OVER(PARTITION BY a.InternalCode ORDER BY c.OrderNum desc)RN,a.InternalCode,c.IsPass,c.OrderNum,(SELECT COUNT(1) FROM dbo.opPlanExecutMain op WHERE op.AssemblyPlanDetailID=a.AssemblyPlanDetailID) OnLineQty
+	SELECT b.WorkOrder,b.MaterialCode,b.MaterialName,ROW_NUMBER()OVER(PARTITION BY a.InternalCode,a.ID ORDER BY c.OrderNum DESC,ISNULL(c.PassTime,FORMAT(GETDATE(),'yyyy-MM-dd HH:mm:ss'))desc)RN,a.InternalCode,c.IsPass,c.OrderNum,(SELECT COUNT(1) FROM dbo.opPlanExecutMain op WHERE op.AssemblyPlanDetailID=a.AssemblyPlanDetailID) OnLineQty
 	FROM dbo.opPlanExecutMain a INNER JOIN dbo.mxqh_plAssemblyPlanDetail b ON a.AssemblyPlanDetailID=b.ID
 	INNER JOIN dbo.opPlanExecutDetail c ON a.ID=c.PlanExecutMainID
 	--INNER JOIN dbo.opPlanExecutChild d ON c.ID=d.PlanExecutDetailID
@@ -44,11 +44,12 @@ BEGIN
 	
 	--未完工内控码集合
 	SELECT * FROM (
-	SELECT t.InternalCode,t.IsPass,ROW_NUMBER()OVER(ORDER BY t.InternalCode)RN FROM 
+	SELECT t.InternalCode,t.IsPass,t.IsDump,ROW_NUMBER()OVER(ORDER BY t.InternalCode)RN FROM 
 	(
-	SELECT ROW_NUMBER()OVER(PARTITION BY a.InternalCode ORDER BY c.OrderNum desc)RN,a.InternalCode,c.IsPass,c.OrderNum
+	SELECT ROW_NUMBER()OVER(PARTITION BY a.InternalCode,a.ID ORDER BY c.OrderNum desc,ISNULL(c.PassTime,FORMAT(GETDATE(),'yyyy-MM-dd HH:mm:ss'))desc)RN,a.InternalCode,c.IsPass,c.OrderNum
+	,CASE WHEN ISNULL(d.MainId,0)=0 THEN '否' ELSE '是'END  IsDump
 	FROM dbo.opPlanExecutMain a INNER JOIN dbo.mxqh_plAssemblyPlanDetail b ON a.AssemblyPlanDetailID=b.ID
-	INNER JOIN dbo.opPlanExecutDetail c ON a.ID=c.PlanExecutMainID
+	INNER JOIN dbo.opPlanExecutDetail c ON a.ID=c.PlanExecutMainID LEFT JOIN opPlanExecutMainDump d ON a.ID=d.MainId
 	--INNER JOIN dbo.opPlanExecutChild d ON c.ID=d.PlanExecutDetailID
 	WHERE b.WorkOrder=@WorkOrder  AND c.ExtendOne=0
 	) t WHERE t.RN=1 AND t.IsPass=0
@@ -56,7 +57,7 @@ BEGIN
 	--未完工内控码总数
 	SELECT COUNT(1)Count FROM 
 	(
-	SELECT ROW_NUMBER()OVER(PARTITION BY a.InternalCode ORDER BY c.OrderNum desc)RN,a.InternalCode,c.IsPass,c.OrderNum
+	SELECT ROW_NUMBER()OVER(PARTITION BY a.InternalCode,a.ID ORDER BY c.OrderNum desc,ISNULL(c.PassTime,FORMAT(GETDATE(),'yyyy-MM-dd HH:mm:ss'))desc)RN,a.InternalCode,c.IsPass,c.OrderNum
 	FROM dbo.opPlanExecutMain a INNER JOIN dbo.mxqh_plAssemblyPlanDetail b ON a.AssemblyPlanDetailID=b.ID
 	INNER JOIN dbo.opPlanExecutDetail c ON a.ID=c.PlanExecutMainID
 	--INNER JOIN dbo.opPlanExecutChild d ON c.ID=d.PlanExecutDetailID
@@ -72,7 +73,7 @@ BEGIN
 	--完工信息
 	SELECT MIN(t.WorkOrder)WorkOrder,MIN(t.MaterialCode)MaterialCode,MIN(t.MaterialName)MaterialName,@Quantity Quantity,COUNT(*)CompleteQty,@Quantity-COUNT(*)UnCompleteQty,MIN(t.OnLineQty)OnLineQty FROM 
 	(
-	SELECT b.WorkOrder,b.MaterialCode,b.MaterialName,ROW_NUMBER()OVER(PARTITION BY a.InternalCode ORDER BY c.OrderNum desc)RN,a.InternalCode,c.IsPass,c.OrderNum,(SELECT COUNT(1) FROM dbo.opPlanExecutMainHH op WHERE op.AssemblyPlanDetailID=a.AssemblyPlanDetailID) OnLineQty
+	SELECT b.WorkOrder,b.MaterialCode,b.MaterialName,ROW_NUMBER()OVER(PARTITION BY a.InternalCode,a.ID ORDER BY c.OrderNum desc,ISNULL(c.PassTime,FORMAT(GETDATE(),'yyyy-MM-dd HH:mm:ss'))desc)RN,a.InternalCode,c.IsPass,c.OrderNum,(SELECT COUNT(1) FROM dbo.opPlanExecutMainHH op WHERE op.AssemblyPlanDetailID=a.AssemblyPlanDetailID) OnLineQty
 	FROM dbo.opPlanExecutMainHH a INNER JOIN dbo.mxqh_plAssemblyPlanDetail b ON a.AssemblyPlanDetailID=b.ID
 	INNER JOIN dbo.opPlanExecutDetailHH c ON a.ID=c.PlanExecutMainID
 	--INNER JOIN dbo.opPlanExecutChild d ON c.ID=d.PlanExecutDetailID
@@ -81,18 +82,20 @@ BEGIN
 	
 	--未完工内控码集合
 	SELECT * FROM (
-	SELECT t.InternalCode,t.IsPass,ROW_NUMBER()OVER(ORDER BY t.InternalCode)RN FROM 
+	SELECT t.InternalCode,t.IsPass,t.IsDump,ROW_NUMBER()OVER(ORDER BY t.InternalCode)RN FROM 
 	(
-	SELECT ROW_NUMBER()OVER(PARTITION BY a.InternalCode ORDER BY c.OrderNum desc)RN,a.InternalCode,c.IsPass,c.OrderNum
+	SELECT ROW_NUMBER()OVER(PARTITION BY a.InternalCode,a.ID ORDER BY c.OrderNum desc,ISNULL(c.PassTime,FORMAT(GETDATE(),'yyyy-MM-dd HH:mm:ss'))desc)RN,a.InternalCode,c.IsPass,c.OrderNum
+	,CASE WHEN ISNULL(d.MainId,0)=0 THEN '否' ELSE '是'END  IsDump
 	FROM dbo.opPlanExecutMainHH a INNER JOIN dbo.mxqh_plAssemblyPlanDetail b ON a.AssemblyPlanDetailID=b.ID
 	INNER JOIN dbo.opPlanExecutDetailHH c ON a.ID=c.PlanExecutMainID
+	LEFT JOIN dbo.opPlanExecutMainDumpHH d ON a.ID=d.MainId
 	WHERE b.WorkOrder=@WorkOrder  AND c.ExtendOne=0
 	) t WHERE t.RN=1 AND t.IsPass=0
 	) t1 WHERE t1.RN>@beginIndex AND t1.RN<@endIndex
 	--未完工内控码总数
 	SELECT COUNT(1)Count FROM 
 	(
-	SELECT ROW_NUMBER()OVER(PARTITION BY a.InternalCode ORDER BY c.OrderNum desc)RN,a.InternalCode,c.IsPass,c.OrderNum
+	SELECT ROW_NUMBER()OVER(PARTITION BY a.InternalCode,a.ID ORDER BY c.OrderNum desc,ISNULL(c.PassTime,FORMAT(GETDATE(),'yyyy-MM-dd HH:mm:ss'))desc)RN,a.InternalCode,c.IsPass,c.OrderNum
 	FROM dbo.opPlanExecutMainHH a INNER JOIN dbo.mxqh_plAssemblyPlanDetail b ON a.AssemblyPlanDetailID=b.ID
 	INNER JOIN dbo.opPlanExecutDetailHH c ON a.ID=c.PlanExecutMainID
 	WHERE b.WorkOrder=@WorkOrder AND c.ExtendOne=0
