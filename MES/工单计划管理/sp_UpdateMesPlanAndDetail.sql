@@ -98,10 +98,11 @@ BEGIN
 			,Quantity=a.Quantity
 			,CustomerOrder=a.CustomerOrder
 			,DeliveryDate=a.DeliveryDate
-			--,CustomerID=a.CustomerID,CustomerCode=a.CUstomerCode,CustomerName=a.CustomerName
+			,CustomerID=a.CustomerID,CustomerCode=a.CUstomerCode,CustomerName=a.CustomerName
 			,SendPlaceID=a.SendPlaceID,SendPlaceCode=b.Code,SendPlaceName=b.Name
 			,ERPSO=a.ERPSO,ERPQuantity=a.ERPQuantity,boRoutingID=a.boRoutingID,TBName=a.TbName,CLName=a.ClName,Remark=a.Remark
 			,MinWeight=a.MinWeight,MaxWeight=a.MaxWeight
+			,CompleteType=a.CompleteType
 			FROM #TempTable a,dbo.baSendPlace b WHERE a.ID=dbo.mxqh_plAssemblyPlanDetail.ID AND a.SendPlaceID=b.ID
 
 		--同步数据到Mes原表 plAssemblyPlanDetail

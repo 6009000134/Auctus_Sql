@@ -84,30 +84,31 @@ BEGIN
 	IF @IsNeedAddPlanDetail=1
 	BEGIN
 			--检查旧的物料表中是否有此料品信息，若没有，则从mxqh_bamaterial同步到baMaterial
-			IF NOT EXISTS(SELECT 1 FROM #TempTable a INNER JOIN dbo.baMaterial b ON a.MaterialID=b.ID)
-			BEGIN
-				--SET IDENTITY_INSERT dbo.baMaterial ON 
-				INSERT INTO dbo.baMaterial
-				        ( ID ,TS ,MaterialTypeID ,MaterialCode ,MaterialName ,Brand ,Color ,LowerFPY ,Texture ,
-				          IsBox ,Spec ,Unit ,Weight ,Remark ,IsCanChangePO ,PalletSumWight ,BoxWeight ,BoxCount ,PerBoxCount
-						   ,ColorBoxCount ,PalletRoughWeight ,ColorBoxPrintNum ,UPPH ,PersonCount ,PassSwitch ,ProductSwitch
-				        )
-				SELECT a.ID,a.CreateDate,a.MaterialTypeID,a.MaterialCode,a.MaterialName,a.Brand,a.Color,a.LowerFPY,a.Texture,
-				a.IsBox,a.Spec,a.Unit,a.Weight,a.Remark,a.IsCanChangePO,a.PalletSumWight,a.BoxWeight,a.BoxCount,a.PerBoxCount
-				,a.ColorBoxCount,a.PalletRoughWeight,a.ColorBoxCount,a.UPPH,a.PersonCount,a.PassSwitch,a.ProductSwitch
-				FROM dbo.mxqh_Material a,#TempTable b WHERE a.Id=b.MaterialID
-				--SET IDENTITY_INSERT dbo.baMaterial OFF
+			--IF NOT EXISTS(SELECT 1 FROM #TempTable a INNER JOIN dbo.baMaterial b ON a.MaterialID=b.ID)
+			--BEGIN
+			--	--SET IDENTITY_INSERT dbo.baMaterial ON 
+			--	INSERT INTO dbo.baMaterial
+			--	        ( ID ,TS ,MaterialTypeID ,MaterialCode ,MaterialName ,Brand ,Color ,LowerFPY ,Texture ,
+			--	          IsBox ,Spec ,Unit ,Weight ,Remark ,IsCanChangePO ,PalletSumWight ,BoxWeight ,BoxCount ,PerBoxCount
+			--			   ,ColorBoxCount ,PalletRoughWeight ,ColorBoxPrintNum ,UPPH ,PersonCount ,PassSwitch ,ProductSwitch
+			--	        )
+			--	SELECT a.ID,a.CreateDate,a.MaterialTypeID,a.MaterialCode,a.MaterialName,a.Brand,a.Color,a.LowerFPY,a.Texture,
+			--	a.IsBox,a.Spec,a.Unit,a.Weight,a.Remark,a.IsCanChangePO,a.PalletSumWight,a.BoxWeight,a.BoxCount,a.PerBoxCount
+			--	,a.ColorBoxCount,a.PalletRoughWeight,a.ColorBoxCount,a.UPPH,a.PersonCount,a.PassSwitch,a.ProductSwitch
+			--	FROM dbo.mxqh_Material a,#TempTable b WHERE a.Id=b.MaterialID
+			--	--SET IDENTITY_INSERT dbo.baMaterial OFF
 
-			END 
+			--END 
 			--插入工单详情数据
 			INSERT INTO dbo.mxqh_plAssemblyPlanDetail
 			        ( CreateBy ,CreateDate ,ModifyBy ,ModifyDate ,AssemblyPlanID ,ListNo ,WorkOrder ,MaterialID ,MaterialCode ,MaterialName ,
 			          Quantity ,OnlineTime ,OfflineTime ,CustomerOrder ,DeliveryDate ,CustomerID ,CustomerCode ,CustomerName ,SendPlaceID ,SendPlaceCode ,
 			          SendPlaceName ,IsPublish ,IsLock ,Status ,CompleteDate ,ERPSO ,ERPQuantity ,IsUpload ,boRoutingID ,TBName ,CLName ,Remark,minWeight,maxWeight
+					  ,CompleteType
 			        )
 			SELECT @CreateBy ,GETDATE() ,@CreateBy ,GETDATE() ,@PlanID ,@ListNo ,a.WorkOrder ,a.MaterialID ,a.MaterialCode ,a.MaterialName ,a.Quantity , 
 			          N'' ,N'' ,a.CustomerOrder ,a.DeliveryDate ,a.CustomerID ,a.CustomerCode ,a.CustomerName ,c.ID ,c.Code ,c.Name ,1 ,0 ,0 ,NULL ,a.ERPSO , 
-					  a.ERPQuantity ,0 ,a.boRoutingID ,a.TBName ,a.CLName ,a.Remark ,a.MinWeight,a.MaxWeight
+					  a.ERPQuantity ,0 ,a.boRoutingID ,a.TBName ,a.CLName ,a.Remark ,a.MinWeight,a.MaxWeight,a.CompleteType
 			        FROM #TempTable a,dbo.baAssemblyLine b,dbo.baSendPlace c WHERE a.AssemblyLineID=b.ID AND a.SendPlaceID=c.ID			
 			--数据同步到原表mxqh_plAssemblyPlanDetail
 			INSERT INTO dbo.plAssemblyPlanDetail
