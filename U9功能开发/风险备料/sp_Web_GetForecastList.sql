@@ -1,5 +1,5 @@
 /*
-添加预测订单
+获取预测订单列表
 */
 ALTER PROC [dbo].[sp_Web_GetForecastList]
 (
@@ -23,14 +23,14 @@ SELECT a.ID,a.DocNo,a.CreatedBy,a.ModifiedBy,a.Customer_Name,FORMAT(a.BusinessDa
 FROM dbo.Auctus_Forecast a INNER JOIN dbo.Auctus_ForecastLine b ON a.ID=b.forecast
 WHERE PATINDEX(@Code,b.Code)>0  
 --b.code LIKE @Code
-AND (a.CreatedBy=@UserName OR @UserName='超级管理员' OR @UserName='胡德政')
+AND (a.CreatedBy=@UserName OR @UserName='超级管理员' OR @UserName='胡德政' OR @UserName='徐芳' OR @UserName='张文萍')
 ) t WHERE t.RN>@beginIndex AND t.RN<@endIndex
 
 
 SELECT COUNT(*) TotalCount
 FROM dbo.Auctus_Forecast a INNER JOIN dbo.Auctus_ForecastLine b ON a.ID=b.forecast
 WHERE PATINDEX(@Code,b.Code)>0
-AND  (a.CreatedBy=@UserName OR @UserName='超级管理员' OR @UserName='胡德政')
+AND  (a.CreatedBy=@UserName OR @UserName='超级管理员' OR @UserName='胡德政' OR @UserName='徐芳'  OR @UserName='张文萍')
 SELECT @Code
 END 
 
