@@ -1,0 +1,13 @@
+CREATE TABLE Auctus_MailLog
+(
+ID INT PRIMARY KEY IDENTITY(1,1),
+CreateBy NVARCHAR(10),
+Subject NVARCHAR(MAX),
+Body NVARCHAR(MAX),
+[From] NVARCHAR(50),
+[To] NVARCHAR(MAX),
+[CC] NVARCHAR(MAX),
+Sent_Date DATETIME,
+Sent_Status INT,--0Ê§°Ü£¬1³É¹¦
+Remark NVARCHAR(MAX)
+)
