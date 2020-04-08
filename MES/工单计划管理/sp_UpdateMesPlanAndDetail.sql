@@ -103,6 +103,7 @@ BEGIN
 			,ERPSO=a.ERPSO,ERPQuantity=a.ERPQuantity,boRoutingID=a.boRoutingID,TBName=a.TbName,CLName=a.ClName,Remark=a.Remark
 			,MinWeight=a.MinWeight,MaxWeight=a.MaxWeight
 			,CompleteType=a.CompleteType
+			,CustomerItemName=a.CustomerItemName
 			FROM #TempTable a,dbo.baSendPlace b WHERE a.ID=dbo.mxqh_plAssemblyPlanDetail.ID AND a.SendPlaceID=b.ID
 
 		--同步数据到Mes原表 plAssemblyPlanDetail
@@ -116,7 +117,7 @@ BEGIN
 		--,CustomerID=a.CustomerID,CustomerCode=a.CustomerCode,CustomerName=a.CustomerName
 		,SendPlaceID=a.SendPlaceID,SendPlaceCode=a.SendPlaceCode,SendPlaceName=a.SendPlaceName
 		--,IsPublish=a.IsPublish,IsLock=a.IsLock,ExtendOne=a.CompleteDate
-		,ERPSO=a.ERPSO,ERPQuantity=a.ERPQuantity
+		,ERPSO=a.ERPSO,ERPQuantity=a.ERPQuantity		
 		FROM dbo.mxqh_plAssemblyPlanDetail a,#TempTable b WHERE a.ID=b.ID AND dbo.plAssemblyPlanDetail.ID=a.ID
 						
 		SELECT '1'MsgType,'修改成功！' Msg
