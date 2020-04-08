@@ -35,7 +35,7 @@ BEGIN
 	SELECT @BoxNumber=MAX(e.BoxNumber) FROM dbo.mxqh_plAssemblyPlanDetail a,#TempTable b,mxqh_plAssemblyPlanDetail c,dbo.opPackageMain d,dbo.opPackageDetail e
 	WHERE a.ID=b.MoID AND a.ERPSO=c.ERPSO AND ISNULL(a.ERPSO,'')<>'' AND c.ID=d.AssemblyPlanDetailID AND d.ID=e.PackMainID
 
-	SELECT @Quantity=a.Quantity,@BoxCount=CEILING(a.Quantity/CONVERT(DECIMAL(18,2),c.PerBoxCount)),@PerBoxQuantity=c.PerBoxCount,@PackMainID=d.ID FROM dbo.mxqh_plAssemblyPlanDetail a,#TempTable b,dbo.baMaterial c,dbo.opPackageMain d WHERE a.ID=b.MoID AND a.MaterialID=c.ID AND a.ID=d.AssemblyPlanDetailID
+	SELECT @Quantity=a.Quantity,@BoxCount=CEILING(a.Quantity/CONVERT(DECIMAL(18,2),c.PerBoxCount)),@PerBoxQuantity=c.PerBoxCount,@PackMainID=d.ID FROM dbo.mxqh_plAssemblyPlanDetail a,#TempTable b,dbo.mxqh_Material c,dbo.opPackageMain d WHERE a.ID=b.MoID AND a.MaterialID=c.ID AND a.ID=d.AssemblyPlanDetailID
 
 	WHILE @LoopCount<@BoxCount
 	BEGIN
