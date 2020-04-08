@@ -12,14 +12,15 @@ BEGIN
 		END
 		ELSE
         BEGIN
+			SELECT * FROM #TempTable
  			INSERT INTO dbo.Mould
 					( CreateBy ,CreateDate,Deleted ,Code ,Name ,SPECS ,HoleNum ,TotalNum ,
 					  DailyCapacity ,DailyNum ,RemainNum ,Holder ,Manufacturer ,CycleTime ,ProductWeight ,
-					  NozzleWeight ,DealDate ,EffectiveDate ,Remark
+					  NozzleWeight ,DealDate ,EffectiveDate ,Remark,MachineWeight,ProductCode,ModelType
 					)
 			SELECT a.CreateBy,GETDATE(),'0',a.Code,a.Name,a.SPECS,a.HoleNum,a.TotalNum,a.DailyCapacity
 			,a.DailyNum,a.RemainNum,a.Holder,a.Manufacturer,a.CycleTime,a.ProductWeight,a.NozzleWeight,a.DealDate
-			,a.EffectiveDate,a.Remark
+			,a.EffectiveDate,a.Remark,MachineWeight,ProductCode,ModelType
 			FROM #TempTable a
 			SELECT '1'MsgType,'Ìí¼Ó³É¹¦£¡'Msg       
 		END 

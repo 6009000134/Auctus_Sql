@@ -16,7 +16,7 @@ HoleNum INT,--穴数
 TotalNum INT,--寿命总次数
 DailyCapacity INT,--日产能，默认22小时
 DailyNum INT,--日模次=日产能/22
-RemainNum INT,--剩余模次
+RemainNum DECIMAL(18,4),--剩余模次
 Holder NVARCHAR(50),--使用委外商
 Manufacturer NVARCHAR(50),--制造厂商
 CycleTime DECIMAL(18,4),--成型周期(s)
@@ -25,7 +25,10 @@ NozzleWeight DECIMAL(18,4),--水口重量(g/pcs)
 DealDate DATETIME,--购买日期
 IsEffective BIT,--是否生效
 EffectiveDate DATETIME,--启用日期
-Remark NVARCHAR(800)
+Remark NVARCHAR(800),
+MachineWeight DECIMAL(18,4),--机台吨位
+ProductCode VARCHAR(600),--产品料号
+ModelType VARCHAR(300)--使用机型
 )
 
 /*
