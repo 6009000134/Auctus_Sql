@@ -4,7 +4,8 @@
 ALTER PROCEDURE [dbo].[sp_UpdateCompleteRpt]
 (
 @CreateBy VARCHAR(30),
-@CompleteQty INT
+@CompleteQty INT,
+@TotalStartQty INT
 )
 AS
 BEGIN
@@ -27,6 +28,11 @@ BEGIN
 				SELECT '0'MsgType,'完工总数大于工单数量！' Msg			
 				RETURN;
 			END
+			IF @MesCompleteQty>@TotalStartQty
+			BEGIN
+				SELECT '0'MsgType,'完工总数大于U9开工数量！' Msg			
+				RETURN;
+			END 
 			--检验修改后完工数量是否小于U9中已经录入的完工数量
 			IF @MesCompleteQty<@CompleteQty
 			BEGIN
