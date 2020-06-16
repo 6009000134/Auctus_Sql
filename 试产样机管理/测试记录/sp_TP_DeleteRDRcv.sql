@@ -7,6 +7,7 @@ alter PROC sp_TP_DeleteRDRcv
 )
 AS
 BEGIN
+	--SN出库状态，不可删除
 	DELETE FROM dbo.TP_RDRcv  WHERE id=@ID
 	DELETE FROM dbo.TP_RDRcvDetail WHERE RcvID=@ID
 	SELECT '1'MsgType,'删除成功'Msg
