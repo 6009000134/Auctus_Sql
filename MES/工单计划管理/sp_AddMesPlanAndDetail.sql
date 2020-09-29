@@ -74,12 +74,7 @@ BEGIN
 			        FROM #TempTable a INNER JOIN dbo.baAssemblyLine b ON a.AssemblyLineID=b.ID			
 
 			SELECT @PlanID=a.ID FROM dbo.mxqh_plAssemblyPlan a,#TempTable b WHERE a.AssemblyDate=b.AssemblyDate AND a.AssemblyLineID=b.AssemblyLineID
-			--数据同步到Mes原表 plAssemblyPlan
-			INSERT INTO dbo.plAssemblyPlan
-			        ( ID ,TS ,AssemblyDate ,AssemblyLineID ,AssemblyLineCode ,AssemblyLineName ,CreateUserID ,CreateDate
-			        )
-					SELECT a.ID,a.CreateDate,a.AssemblyDate,a.AssemblyLineID,a.AssemblyLineCode,a.AssemblyLineName,1,a.CreateDate FROM dbo.mxqh_plAssemblyPlan a WHERE a.ID=@PlanID
-
+		
 	END 
 	IF @IsNeedAddPlanDetail=1
 	BEGIN
@@ -95,15 +90,6 @@ BEGIN
 			          N'' ,N'' ,a.CustomerOrder ,a.DeliveryDate ,a.CustomerID ,a.CustomerCode ,a.CustomerName ,c.ID ,c.Code ,c.Name ,1 ,0 ,0 ,NULL ,a.ERPSO , 
 					  a.ERPQuantity ,0 ,a.boRoutingID ,a.TBName ,a.CLName ,a.Remark ,a.MinWeight,a.MaxWeight,a.CompleteType,a.CustomerItemName
 			        FROM #TempTable a,dbo.baAssemblyLine b,dbo.baSendPlace c WHERE a.AssemblyLineID=b.ID AND a.SendPlaceID=c.ID			
-			--数据同步到原表mxqh_plAssemblyPlanDetail
-			INSERT INTO dbo.plAssemblyPlanDetail
-			        ( ID ,TS ,AssemblyPlanID ,ListNo ,WorOrder ,MaterialID ,MaterialCode ,MaterialName ,Quantity ,OnlineTime ,OfflineTime ,
-			          CustomerOrder ,DeliveryDate ,CustomerID ,CustomerCode ,CustomerName ,SendPlaceID ,SendPlaceCode ,SendPlaceName ,
-			          IsPublish ,IsLock ,ExtendOne ,ExtendTwo ,ExtendThree ,ERPSO ,ERPMO ,ERPQuantity ,ERPOrderNo ,ERPOrderQty ,IsUpload			        )
-			SELECT	a.ID,a.CreateDate ,a.AssemblyPlanID,@ListNo,a.WorkOrder,a.MaterialID,a.MaterialCode,a.MaterialName,a.Quantity,'','',
-					a.CustomerOrder,a.DeliveryDate,a.CustomerID,a.CustomerCode,a.CustomerName,a.SendPlaceID,a.SendPlaceCode,a.SendPlaceName,
-					a.IsPublish,a.IsLock,NULL,NULL,NULL,a.ERPSO,NULL,a.ERPQuantity,a.ERPOrderNo,a.ERPOrderQty,a.IsUpload
-			        FROM dbo.mxqh_plAssemblyPlanDetail a ,#TempTable b WHERE a.WorkOrder=b.WorkOrder AND a.AssemblyPlanID=@PlanID
 			SELECT '1'MsgType,'添加成功！' Msg	
 	END 
 END 

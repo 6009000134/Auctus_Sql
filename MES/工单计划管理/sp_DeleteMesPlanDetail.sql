@@ -23,8 +23,6 @@ BEGIN
 		DELETE FROM dbo.opPackageMain WHERE AssemblyPlanDetailID=@ID
 		--删除工单
 		DELETE FROM dbo.mxqh_plAssemblyPlanDetail WHERE ID=@ID
-		--删除旧表工单
-		DELETE FROM dbo.plAssemblyPlanDetail WHERE ID=@ID
 		SELECT '删除成功！'Msg,'1' MsgType
 	END 
 
