@@ -1,0 +1,24 @@
+/*
+Ω·À„∑Ω Ω
+*/
+CREATE VIEW v_Cust_Settlement4OA as
+SELECT  *
+FROM    ( SELECT    A.[ID] AS [ID] ,
+                    A.Org ,
+                    A.[Code] AS [Code] ,
+                    A1.[Name] AS [Name] ,
+                    A.[SettlementClass] AS [SettlementClass] ,
+                    A.[CashBankAttribute] AS [CashBankAttribute] ,
+                    A.[SysVersion] AS [SysVersion] ,
+                    A2.[Code] AS SysMlFlag ,
+                    ROW_NUMBER() OVER ( ORDER BY A.[Code] ASC, ( A.[ID] + 17 ) ASC ) AS rownum
+          FROM      CBO_SettlementMethod AS A
+                    LEFT JOIN Base_Language AS A2 ON ( A2.Code = 'zh-CN' )
+                                                     AND ( A2.Effective_IsEffective = 1 )
+                    LEFT JOIN [CBO_SettlementMethod_Trl] AS A1 ON ( A1.SysMLFlag = 'zh-CN' )
+                                                              AND ( A1.SysMLFlag = A2.Code )
+                                                              AND ( A.[ID] = A1.[ID] )
+          WHERE     A.[Effective_IsEffective] = 1
+                    AND A.[Effective_EffectiveDate] <= GETDATE()
+                    AND A.[Effective_DisableDate] >= GETDATE()
+        ) T; 
