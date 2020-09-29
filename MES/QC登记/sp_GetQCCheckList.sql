@@ -18,7 +18,7 @@ BEGIN
 	SET @CustomOrder='%'+ISNULL(@CustomOrder,'')+'%'
 	SET @PalletCode='%'+ISNULL(@PalletCode,'')+'%'
 	SET @WorkOrder='%'+ISNULL(@WorkOrder,'')+'%'
-	SELECT * FROM(
+	SELECT t.*,CONVERT(BIT,CASE WHEN t1.OQCID IS NULL THEN 0 ELSE 1 END) HaveReport  FROM(
 	SELECT  ID,TS,DocNo,PalletCode,CustomOrder,CheckNum,CONVERT(VARCHAR(10),IsOK)IsOK,ProblemType,ProblemInfo,ProblemDesp,a.CheckTime,a.CheckUser
 	,(SELECT DISTINCT t2.WorkOrder FROM dbo.opPackageDetail t,dbo.opPackageMain t1,dbo.mxqh_plAssemblyPlanDetail t2
 	WHERE t.PalletCode=a.PalletCode AND t.PackMainID=t1.ID AND t1.AssemblyPlanDetailID=t2.ID
@@ -28,7 +28,7 @@ BEGIN
 	,CONVERT(DECIMAL(18,2),ROUND(((SELECT COUNT(*) FROM dbo.qlCheckPar q WHERE q.MainID=a.ID AND q.IsCheckOk=1)/CONVERT(DECIMAL(18,4),(SELECT COUNT(*) FROM dbo.qlCheckPar q1 WHERE q1.MainID=a.ID)))*100,2))Rate
 	FROM dbo.qlCheckMain a 
 	WHERE PATINDEX(@PalletCode,a.PalletCode)>0 AND PATINDEX(@CustomOrder,a.CustomOrder)>0 
-	)t
+	)t LEFT JOIN dbo.qc_OQCReport t1 ON t.ID=t1.OQCID
 	WHERE t.RN>@beginIndex AND t.RN<@endIndex  AND PATINDEX(@WorkOrder,t.WorkOrder)>0  ORDER BY t.RN
 	
 
