@@ -1,0 +1,13 @@
+CREATE TABLE mxqh_EquipMoRelation
+(
+ID INT PRIMARY KEY IDENTITY(1,1),
+CreateBy NVARCHAR(50),
+CreateDate DATETIME,
+ModifyBy NVARCHAR(50),
+ModifyDate DATETIME,
+WorkOrderID INT,
+EquipID INT,
+LowerLimit DECIMAL(18,4),
+UpperLimit DECIMAL(18,4),
+Remark NVARCHAR(300)
+)

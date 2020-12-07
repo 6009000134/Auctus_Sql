@@ -7,12 +7,12 @@ AS
 		WITH Itemmaster AS--MPS料品
 	(
 	SELECT a.ID,a.Code,a.Name
-	,b.MRPPlanningType--0/MPS件
+	--,b.MRPPlanningType--0/MPS件
 	,b.FixedLT--固定提前期
 	,ISNULL(c.Name,'')MRPCategory
-	FROM dbo.CBO_ItemMaster a INNER JOIN dbo.CBO_MrpInfo b ON a.ID=b.ItemMaster
+	FROM dbo.CBO_ItemMaster a LEFT JOIN dbo.CBO_MrpInfo b ON a.ID=b.ItemMaster
 	LEFT JOIN dbo.vw_MRPCategory c ON a.DescFlexField_PrivateDescSeg22=c.Code
-	WHERE b.MRPPlanningType=0
+	WHERE a.ItemFormAttribute=10
 	),
 	MOS AS--工单集合
 	(

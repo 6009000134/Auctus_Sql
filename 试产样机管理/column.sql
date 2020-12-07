@@ -1,0 +1,6 @@
+ALTER TABLE dbo.TP_RDRcvDetail ADD InternalCode VARCHAR(100)
+ALTER TABLE dbo.TP_RDShipDetail ADD InternalCode VARCHAR(100)
+ALTER TABLE dbo.TP_BCRcvDetail ADD InternalCode VARCHAR(100)
+ALTER TABLE dbo.TP_BCShipDetail ADD InternalCode VARCHAR(100)
+ALTER TABLE dbo.TP_PCRcvDetail ADD InternalCode VARCHAR(100)
+ALTER TABLE dbo.TP_PCShipDetail ADD InternalCode VARCHAR(100)

@@ -1,4 +1,4 @@
-CREATE VIEW vw_tempCapacity
+ALTER  VIEW vw_tempCapacity
 as
  --生产周期：固定提前期+（数量/批次数量）*变动提前期
  with  Items as (
@@ -44,8 +44,8 @@ as
    when 'MRP119' then  '前加工委外'  
  end)   MRP分类
  from   cbo_itemMaster a1
-inner join  CBO_MrpInfo a2 on a1.id=a2.ItemMaster  
-where  a2.MRPPlanningType=0 and a1.Effective_IsEffective=1
+LEFT join  CBO_MrpInfo a2 on a1.id=a2.ItemMaster  
+where  a1.ItemFormAttribute=10 and a1.Effective_IsEffective=1
 and  org=1001708020135665
 and  a1.DescFlexField_PrivateDescSeg18 !=''
 and   a1.DescFlexField_PrivateDescSeg22  in ('MRP100','MRP101','MRP107','MRP114','MRP115','MRP116')

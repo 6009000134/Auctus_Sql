@@ -1,7 +1,7 @@
 /*
 工单信息视图
 */
-alter VIEW v_Cust_MOInfo
+ALTER VIEW v_Cust_MOInfo
 AS
 
 SELECT a.ID MOID,a.DocNo,b.Code,b.Name,dbo.F_GetEnumName('UFIDA.U9.MO.Enums.MOStateEnum',a.DocState,'zh-cn')DocState
@@ -9,9 +9,11 @@ SELECT a.ID MOID,a.DocNo,b.Code,b.Name,dbo.F_GetEnumName('UFIDA.U9.MO.Enums.MOSt
 ,CONVERT(VARCHAR(20),a.StartDate,23)OriginalStartDate
 ,CONVERT(VARCHAR(20),a.CompleteDate,23)OriginalCompleteDate
 ,a.Org OrgID,o.Code OrgCode,o1.Name OrgName
-,so.DocNo SODocNo,ISNULL(so.DeliveryDate,a.DescFlexField_PrivateDescSeg5) SODeliveryDate
+,so.DocNo SODocNo
+,ISNULL(FORMAT(so.DeliveryDate,'yyyy-MM-dd'),a.DescFlexField_PrivateDescSeg5) SODeliveryDate
 ,a.DescFlexField_PrivateDescSeg4 SO
 ,mrp.Name MRPName
+,ROW_NUMBER() OVER(PARTITION BY a.DocNo ORDER BY ISNULL(FORMAT(so.DeliveryDate,'yyyy-MM-dd'),a.DescFlexField_PrivateDescSeg5))RN
 FROM dbo.MO_MO a  INNER JOIN dbo.CBO_ItemMaster b ON a.ItemMaster=b.ID
 LEFT JOIN dbo.Base_Organization o ON a.Org=o.ID LEFT JOIN dbo.Base_Organization_Trl o1 ON o.id=o1.ID AND ISNULL(o1.SysMLFlag,'zh-cn')='zh-cn'
 LEFT JOIN dbo.CBO_Department_Trl d1 ON a.Department=d1.ID AND ISNULL(d1.SysMLFlag,'zh-cn')='zh-cn'
@@ -34,5 +36,5 @@ AND a.cancel_canceled=0 AND a.org=(SELECT id FROM dbo.Base_Organization WHERE co
 
 
 
-GO
 
+GO

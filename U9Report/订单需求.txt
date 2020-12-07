@@ -1,0 +1,20 @@
+declare  	@IsFO int=0  --是否包含FO
+declare  	@IsSO int=0  --是否包含SO
+declare     @EndDate datetime
+
+set @EndDate =getdate();
+
+---FO 需求
+select b.DocNo,a.DocLineNo,null DocSubLineNo,a.ItemInfo_ItemID ItemID,a.DemandType,a.NUM OrderQtyTU,isnull(a.NUM,0)-isnull(a.SumPreUsedQtyTU,0) ReqQtyTU,a.ShipPlanDate ReqDate   
+from  SM_ForecastOrderLine a
+inner  join   SM_ForecastOrder   b on a.ForecastOrder=b.ID 
+where 1=1 and b.Org=1001708020135665  and a.Status=2   
+and  isnull(a.NUM,0)-isnull(a.SumPreUsedQtyTU,0) > 0 and  DATEDIFF(HH,a.ShipPlanDate,@EndDate)  >= 0 
+
+--SO 需求 
+select c.DocNo,b.DocLineNo,a.DocSubLineNo,a.ItemInfo_ItemID ItemID,a.DemandType,a.ShipPlanQtyTU OrderQtyTU,a.SOShipLineSumInfo_SumLackQtyTU ReqQtyTU,a.AffirmShipDate   ReqDate
+from  SM_SOShipline a
+inner join  SM_SOLine b on a.SOLine=b.ID
+inner  join SM_SO c on b.SO=c.ID
+where 1=1  and c.Org=1001708020135665 and a.Status =3 and a.Cancel_Canceled=0
+and   a.SOShipLineSumInfo_SumLackQtyTU > 0   and  DATEDIFF(HH,a.AffirmShipDate,@EndDate)  >= 0 

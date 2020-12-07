@@ -28,7 +28,7 @@ END
  IF ISNULL(@WorkOrder,'')='' AND ISNULL(@SNCode,'')=''
  BEGIN
 	 INSERT INTO #tempWeight
-	 SELECT a.CreateDate,a.Weigth,a.SNCode FROM dbo.mxqh_SnCodeWeigth a 
+	 SELECT a.CreateDate,a.Weight,a.SNCode FROM dbo.mxqh_SnCodeWeight a 
 	 WHERE a.CreateDate between @SD AND @ED
 
 	 SELECT FORMAT(a.CreateDate,'yyyy-MM-dd HH:mm:ss')CreateDate,a.Weight,a.SNCode,e.AssemblyLineName,d.WorkOrder,d.MaterialCode,d.MaterialName from #tempWeight as a  
@@ -43,8 +43,8 @@ END
  ELSE
  BEGIN
 
- SELECT FORMAT(a.CreateDate,'yyyy-MM-dd HH:mm:ss')CreateDate,a.Weigth Weight,a.SNCode,e.AssemblyLineName,d.WorkOrder,d.MaterialCode,d.MaterialName 
- FROM mxqh_SnCodeWeigth as a  
+ SELECT FORMAT(a.CreateDate,'yyyy-MM-dd HH:mm:ss')CreateDate,a.Weight ,a.SNCode,e.AssemblyLineName,d.WorkOrder,d.MaterialCode,d.MaterialName 
+ FROM mxqh_SnCodeWeight as a  
                         inner join baInternalAndSNCode as b on a.SNCode = b.SNCode 
                         inner join dbo.opPlanExecutMainPK  as c on b.InternalCode = c.InternalCode
                         inner join mxqh_plAssemblyPlanDetail as d on c.AssemblyPlanDetailID = d.ID
@@ -57,3 +57,4 @@ END
 
  
 END 
+
