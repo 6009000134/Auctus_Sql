@@ -84,11 +84,11 @@ BEGIN
 			        ( CreateBy ,CreateDate ,ModifyBy ,ModifyDate ,AssemblyPlanID ,ListNo ,WorkOrder ,MaterialID ,MaterialCode ,MaterialName ,
 			          Quantity ,OnlineTime ,OfflineTime ,CustomerOrder ,DeliveryDate ,CustomerID ,CustomerCode ,CustomerName ,SendPlaceID ,SendPlaceCode ,
 			          SendPlaceName ,IsPublish ,IsLock ,Status ,CompleteDate ,ERPSO ,ERPQuantity ,IsUpload ,boRoutingID ,TBName ,CLName ,Remark,minWeight,maxWeight
-					  ,CompleteType,CustomerItemName
+					  ,CompleteType,CustomerItemName,IsMR
 			        )
 			SELECT @CreateBy ,GETDATE() ,@CreateBy ,GETDATE() ,@PlanID ,@ListNo ,a.WorkOrder ,a.MaterialID ,a.MaterialCode ,a.MaterialName ,a.Quantity , 
 			          N'' ,N'' ,a.CustomerOrder ,a.DeliveryDate ,a.CustomerID ,a.CustomerCode ,a.CustomerName ,c.ID ,c.Code ,c.Name ,1 ,0 ,0 ,NULL ,a.ERPSO , 
-					  a.ERPQuantity ,0 ,a.boRoutingID ,a.TBName ,a.CLName ,a.Remark ,a.MinWeight,a.MaxWeight,a.CompleteType,a.CustomerItemName
+					  a.ERPQuantity ,0 ,a.boRoutingID ,a.TBName ,a.CLName ,a.Remark ,a.MinWeight,a.MaxWeight,a.CompleteType,a.CustomerItemName,a.IsMR
 			        FROM #TempTable a,dbo.baAssemblyLine b,dbo.baSendPlace c WHERE a.AssemblyLineID=b.ID AND a.SendPlaceID=c.ID			
 			SELECT '1'MsgType,'Ìí¼Ó³É¹¦£¡' Msg	
 	END 
