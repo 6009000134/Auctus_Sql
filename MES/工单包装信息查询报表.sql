@@ -16,14 +16,14 @@ SET @WorkOrder='%'+ISNULL(@WorkOrder,'')+'%'
 --SET @UserName='%'+ISNULL(@UserName,'')+'%'
 IF object_id('tempdb.dbo.#tempResult') is NULL
 BEGIN
-	CREATE TABLE #tempResult(CreateDate NVARCHAR(40),SNCode VARCHAR(100),PalletCode VARCHAR(50),BoxNumber INT,WorkOrder VARCHAR(100),UserName NVARCHAR(10)	)
+	CREATE TABLE #tempResult(CreateDate NVARCHAR(40),InternalCode VARCHAR(100),SNCode VARCHAR(100),PalletCode VARCHAR(50),BoxNumber INT,WorkOrder VARCHAR(100),UserName NVARCHAR(10)	)
 END 
 ELSE
 BEGIN
 	TRUNCATE TABLE #tempResult
 END
 INSERT INTO #tempResult
-SELECT     A.CreateDate,A.SNCode,
+SELECT     A.CreateDate,g.InternalCode,A.SNCode,
         B.PalletCode ,
         B.BoxNumber ,
         D.WorkOrder ,
@@ -32,6 +32,7 @@ FROM    opPackageChild AS A
         INNER JOIN opPackageDetail AS B ON A.PackDetailID = B.ID
         INNER JOIN opPackageMain AS C ON C.ID = B.PackMainID
         INNER JOIN mxqh_plAssemblyPlanDetail AS D ON D.ID = C.AssemblyPlanDetailID
+		LEFT JOIN dbo.vw_baInternalAndSNCode g ON a.SNCode=g.SNCode
         LEFT JOIN dbo.syUser AS f ON f.LoginID = A.createBy
 WHERE   PATINDEX(@WorkOrder,D.WorkOrder)>0 --AND PATINDEX(@UserName,ISNULL(f.UserName,''))>0
 
@@ -52,7 +53,7 @@ oldData AS
 (
 SELECT *,ROW_NUMBER()OVER(PARTITION BY a.InternalCode ORDER BY lv desc)RN FROM data1 a
 )
-SELECT a.*,b.InternalCode,b.OriInternalCode,b.OriSNCode
-FROM #tempResult a INNER JOIN oldData b ON a.SNCode=b.SNCode
+SELECT a.*,b.OriInternalCode,b.OriSNCode
+FROM #tempResult a LEFT JOIN oldData b ON a.SNCode=b.SNCode
 
 END
