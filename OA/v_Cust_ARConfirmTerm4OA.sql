@@ -1,7 +1,7 @@
 /*
 应收立账条件
 */
-ALTER VIEW v_Cust_ARConfirmTerm4OA
+CREATE VIEW v_Cust_ARConfirmTerm4OA
 as
 SELECT  a.Org ,
         o.Code Org_Code ,
@@ -11,6 +11,7 @@ SELECT  a.Org ,
         --cur1.Name ,
         --a.IsDocEditable ,
         --a.IsInstallmentConfirm ,
+		a.ID,
         a.Code ,
         b.Name ,
         a.Effective_IsEffective ,
@@ -32,3 +33,6 @@ FROM    CBO_ARConfirmTerm a
                                                            'zh-cn') = 'zh-cn'
 LEFT JOIN CBO_ARInstalmentTerm con ON a.ID=con.ARAccrueTerm
 														   WHERE a.Effective_IsEffective=1 AND GETDATE() BETWEEN a.Effective_EffectiveDate AND a.Effective_DisableDate
+
+
+GO

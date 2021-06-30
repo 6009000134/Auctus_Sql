@@ -2,8 +2,8 @@
 客户信息（带立账条件）
 */
 
-alter VIEW V_Cust_Customer4OA AS
-SELECT a.ID,a.Code,a1.Name,a.Org,a2.Code as OrgCode 
+ALTER VIEW V_Cust_Customer4OA AS
+SELECT a.ID,a.Code,a1.Name,a.Org,a2.Code as OrgCode ,a21.Name OrgName
 ,c.ID ARConfirmTerm,c.Code ARConfirmTerm_Code,c1.Name ARConfirmTerm_Name
 ,a.PayCurrency,cur.Code PayCurrencyCode,a.Saleser Seller,op.Code SellerCode,op1.Name SellerName
 ,a.TaxSchedule,tax.Code TaxScheduleCode,tax1.Name TaxScheduleName
@@ -17,7 +17,7 @@ SELECT a.ID,a.Code,a1.Name,a.Org,a2.Code as OrgCode
 FROM dbo.CBO_Customer AS a
 INNER JOIN dbo.CBO_Customer_Trl AS a1 ON a.id=a1.ID
 					AND a1.SysMLFlag='zh-cn'
-INNER JOIN dbo.Base_Organization AS a2 ON a.Org=a2.ID					
+INNER JOIN dbo.Base_Organization AS a2 ON a.Org=a2.ID	 INNER JOIN dbo.Base_Organization_Trl a21 ON a2.ID=a21.ID AND ISNULL(a21.SysMLFlag,'zh-cn')='zh-cn'
 LEFT JOIN CBO_ARConfirmTerm c ON a.ARConfirmTerm=c.ID AND c.Effective_IsEffective=1 AND GETDATE() BETWEEN c.Effective_EffectiveDate AND c.Effective_DisableDate
 LEFT JOIN dbo.CBO_ARConfirmTerm_Trl c1 ON c.ID=c1.ID AND ISNULL(c1.SysMLFlag,'zh-cn')='zh-cn'
 LEFT JOIN dbo.Base_Currency cur ON a.PayCurrency=cur.ID
@@ -37,3 +37,5 @@ AND a.State=1
 
 
 
+
+GO
