@@ -1,3 +1,4 @@
+
 /*
 项目里程碑
 */
@@ -38,16 +39,16 @@ SELECT b.WorkId PID,b.Principal,b.Priority,b.CategoryId,b.WorkCode ProjectCode,b
 ,c.PlanStartDate
 FROM pcs a LEFT JOIN dbo.PJ_WorkPiece b ON a.PID=b.WorkId LEFT JOIN dbo.PJ_WorkPiece c ON a.CID=c.WorkId
 WHERE 1=1
-AND c.WorkName IN ('计划启动时间','计划Alpha日期','计划Beta日期','计划转量产日期','计划Seedstock日期')
+AND c.WorkName IN ('启动时间','Alpha日期','Beta日期','转量产日期','Seedstock日期','立项评审','转产评审','量产评审')
 ),
 PivotData AS
 (
 SELECT a.PID,a.Principal,a.ProjectCode,a.ProjectName,a.Priority,a.CategoryId
-,CASE WHEN a.WorkName='计划启动时间' THEN a.PlanStartDate END '启动时间' 
-,CASE WHEN a.WorkName='计划Alpha日期' THEN a.PlanStartDate END 'Alpha日期' 
-,CASE WHEN a.WorkName='计划Beta日期' THEN a.PlanStartDate END 'Beta日期' 
-,CASE WHEN a.WorkName='计划转量产日期' THEN a.PlanStartDate END '转量产日期' 
-,CASE WHEN a.WorkName='计划Seedstock日期' THEN a.PlanStartDate END 'Seedstock日期' 
+,CASE WHEN a.WorkName='启动时间' OR a.WorkName='立项评审' THEN a.PlanStartDate END '启动时间' 
+,CASE WHEN a.WorkName='Alpha日期' THEN a.PlanStartDate END 'Alpha日期' 
+,CASE WHEN a.WorkName='Beta日期' THEN a.PlanStartDate END 'Beta日期' 
+,CASE WHEN a.WorkName='转量产日期' OR a.WorkName='转产评审' THEN a.PlanStartDate END '转量产日期' 
+,CASE WHEN a.WorkName='Seedstock日期' OR a.WorkName='量产评审' THEN a.PlanStartDate END 'Seedstock日期' 
 FROM ProjectInfo a
 ),
 WorkPieces AS
@@ -58,7 +59,11 @@ FROM PivotData a GROUP BY a.PID,a.Principal,a.ProjectCode,a.ProjectName,a.Priori
 )
 SELECT a.PID,a.ProjectCode,a.ProjectName
 ,b.UserName Principal,c.CategoryName,sv.OptionName
-,a.启动时间,a.Alpha日期,a.Beta日期,a.转量产日期,a.Seedstock日期
+,FORMAT(CONVERT(DATETIME,a.启动时间),'yyyy-MM-dd')启动时间
+,FORMAT(CONVERT(DATETIME,a.Alpha日期),'yyyy-MM-dd')Alpha日期
+,FORMAT(CONVERT(DATETIME,a.Beta日期),'yyyy-MM-dd')Beta日期
+,FORMAT(CONVERT(DATETIME,a.转量产日期),'yyyy-MM-dd')转量产日期
+,FORMAT(CONVERT(DATETIME,a.Seedstock日期),'yyyy-MM-dd')Seedstock日期
 FROM WorkPieces a LEFT JOIN dbo.SM_Users b ON a.Principal=b.UserId
 LEFT JOIN dbo.PS_BusinessCategory c ON a.CategoryId=c.CategoryId
 LEFT JOIN dbo.Sys_ValueOption sv ON SV.TypeName='13' AND a.Priority = CONVERT(int,SV.OptionCode)  AND sv.LanguageId=0
@@ -66,3 +71,6 @@ LEFT JOIN dbo.Sys_ValueOption sv ON SV.TypeName='13' AND a.Priority = CONVERT(in
 
 
 
+
+
+GO
