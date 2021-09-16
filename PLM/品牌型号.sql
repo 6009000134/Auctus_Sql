@@ -42,7 +42,7 @@ DROP TABLE #TempTable
 ;
 WITH Materials AS
 (
-SELECT a.MaterialVerId,a.Code,a.Name FROM dbo.MAT_MaterialVersion a WHERE a.IsFrozen=0 AND a.IsEffect=1 AND a.Code='309050179'
+SELECT a.MaterialVerId,a.Code,a.Name FROM dbo.MAT_MaterialVersion a WHERE a.IsFrozen=0 AND a.IsEffect=1 --AND a.Code='309050179'
 ),
 HasBrands AS--有“品牌/型号”扩展字段的 最新、有效、未冻结 料号
 (
@@ -70,15 +70,15 @@ SELECT a.ObjectExtendId,a.ObjectId,a.PropertyValue,b.ExtendName FROM dbo.MAT_Ext
 )
 SELECT * INTO #TempTable FROM 
 (
-SELECT a.MaterialVerId,a.CategoryId,SUBSTRING(a.Brands,0,LEN(a.Brands)-1)Brands,ISNULL(b.ObjectId,'0')IsExists,b.ObjectExtendId,c.Code,c.Name 
+SELECT a.MaterialVerId,a.CategoryId,SUBSTRING(a.Brands,0,LEN(a.Brands))Brands,ISNULL(b.ObjectId,'0')IsExists,b.ObjectExtendId,c.Code,c.Name 
 FROM BrandsResult a LEFT JOIN ExistsMaterials b ON a.MaterialVerId=b.ObjectId  
 LEFT JOIN dbo.MAT_MaterialVersion c ON a.MaterialVerId=c.MaterialVerId
-WHERE SUBSTRING(a.Brands,0,LEN(a.Brands)-1)<>b.PropertyValue
+WHERE SUBSTRING(a.Brands,0,LEN(a.Brands))<>b.PropertyValue
 UNION ALL 
-SELECT a.MaterialVerId,a.CategoryId,SUBSTRING(a.Brands,0,LEN(a.Brands)-1)Brands,ISNULL(b.ObjectId,'0')IsExists,b.ObjectExtendId,c.Code,c.Name 
+SELECT a.MaterialVerId,a.CategoryId,SUBSTRING(a.Brands,0,LEN(a.Brands))Brands,ISNULL(b.ObjectId,'0')IsExists,b.ObjectExtendId,c.Code,c.Name 
 FROM BrandsResult a LEFT JOIN ExistsMaterials b ON a.MaterialVerId=b.ObjectId
 LEFT JOIN dbo.MAT_MaterialVersion c ON a.MaterialVerId=c.MaterialVerId
-WHERE SUBSTRING(a.Brands,0,LEN(a.Brands)-1)<>b.PropertyValue
+WHERE SUBSTRING(a.Brands,0,LEN(a.Brands))<>b.PropertyValue
 ) t
 SELECT * FROM #TempTable
 
