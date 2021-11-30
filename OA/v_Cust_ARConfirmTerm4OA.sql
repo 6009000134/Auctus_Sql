@@ -1,7 +1,7 @@
 /*
 应收立账条件
 */
-CREATE VIEW v_Cust_ARConfirmTerm4OA
+ALTER  VIEW v_Cust_ARConfirmTerm4OA
 as
 SELECT  a.Org ,
         o.Code Org_Code ,
@@ -14,6 +14,7 @@ SELECT  a.Org ,
 		a.ID,
         a.Code ,
         b.Name ,
+		en.Name_EN ENName,
         a.Effective_IsEffective ,
         a.Effective_EffectiveDate ,
         a.Effective_DisableDate,
@@ -32,7 +33,11 @@ FROM    CBO_ARConfirmTerm a
                                                 AND ISNULL(cur1.SysMLFlag,
                                                            'zh-cn') = 'zh-cn'
 LEFT JOIN CBO_ARInstalmentTerm con ON a.ID=con.ARAccrueTerm
-														   WHERE a.Effective_IsEffective=1 AND GETDATE() BETWEEN a.Effective_EffectiveDate AND a.Effective_DisableDate
+LEFT JOIN dbo.Auctus_ARConfirmTerm en ON b.Name=en.Name
+WHERE a.Effective_IsEffective=1 AND GETDATE() BETWEEN a.Effective_EffectiveDate AND a.Effective_DisableDate
+
+
+
 
 
 GO

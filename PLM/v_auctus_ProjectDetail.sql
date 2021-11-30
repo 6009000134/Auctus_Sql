@@ -1,5 +1,5 @@
---TODO:SS FS FF FS
-alter VIEW v_auctus_ProjectDetail
+
+ALTER VIEW v_auctus_ProjectDetail
 AS
 
 
@@ -17,7 +17,8 @@ SELECT b.RelationId,b.RelationType,a.ParentWork,b.ChildWork,b.SequenceNO,b.Displ
 WHERE a.RelationType!=3
 )
 SELECT 
-t2.RelationId
+t2.RelationId+t2.ParentWork ID
+,t2.RelationId
 ,t2.RelationType
 ,t2.ParentWork
 ,t2.ChildWork
@@ -25,21 +26,34 @@ t2.RelationId
 ,t2.SequenceNO
 ,t2.ProjectCode
 ,t2.ProjectName--项目名称
+,t2.ProjectPrincipal
+,t2.ProjectType
 ,t2.WorkCode
 ,t2.WorkName--阶段任务名称
+,t2.WorkLoad,t2.WorkLoadUnit
+,t2.FillHour
 ,t2.NormalLimit--正常工期
 ,t2.PlanStartDate--计划开始时间
 ,t2.PlanEndDate--计划结束时间 
+,t2.TaskState
+,t2.TaskPrincipal
 ,LEFT(t2.PreWork,LEN(t2.PreWork)-1)PreWork
 ,t2.State
 FROM (
 SELECT a.RelationId,A.RelationType,a.ParentWork,a.ChildWork,a.DisplaySeq,a.SequenceNO
 ,b.WorkCode ProjectCode,b.WorkName ProjectName--项目名称
+,b.Principal ProjectPrincipal
+,'暂无' ProjectType
 ,b.State
 ,c.WorkCode,c.WorkName--阶段任务名称
+,c.Principal TaskPrincipal
 ,c.NormalLimit--正常工期
 ,c.PlanStartDate--计划开始时间
 ,c.PlanEndDate--计划结束时间
+,c.State TaskState
+,c.WorkLoad
+,ISNULL(d.FillHour,0)FillHour
+,CASE WHEN c.WorkLoadUnit=2 THEN '天' WHEN c.WorkLoadUnit=3 THEN '小时' ELSE ''END WorkLoadUnit
 --,d1.SequenceNO PreWork--前置任务
 ,(SELECT 
 CASE WHEN t.DelayTime>0 THEN CONVERT(VARCHAR(100),t1.SequenceNO)+CASE WHEN t.ExecuteMode=0 THEN '' WHEN t.ExecuteMode=1 THEN 'FF' WHEN t.ExecuteMode=2 THEN 'SS' WHEN t.ExecuteMode=3 THEN 'SF' END+'+'+FORMAT(t.DelayTime,'##')+CASE WHEN t.DelayTimeUnit=2 THEN 'd' ELSE 'h'end+',' 
@@ -50,7 +64,11 @@ AND t1.ProjectId=c.ProjectId AND t.ProjectID=c.ProjectId AND t.ChildWork=a.Child
 FOR XML PATH('')) PreWork
 FROM AllRelation a INNER JOIN dbo.PJ_WorkPiece b ON a.ParentWork=b.WorkId
 INNER JOIN dbo.PJ_WorkPiece c ON a.ChildWork=c.WorkId
+LEFT JOIN (SELECT a.WorkId,SUM(a.FillHour)FillHour FROM dbo.LT_WorkHourFill  a
+GROUP BY a.WorkId) d ON a.ChildWork=d.WorkId
 )
 t2
 --WHERE b.WorkCode='LS138'
 --ORDER BY a.DisplaySeq
+
+GO

@@ -33,7 +33,8 @@ FROM    ( SELECT    A.[ID] AS [ID] ,
                     A.[ItemOwnOrg] AS [ItemOwnOrg] ,
                     A.[LogisticOrg] AS [LogisticOrg] ,
                     A.[Wh] AS [Wh] ,
-                    A5.[Code] AS SysMlFlag 
+                    A5.[Code] AS SysMlFlag,
+					a.StorageType
           FROM      InvTrans_WhQoh AS A
                     LEFT JOIN Base_UOM AS A2 ON ( A.StoreUOM = A2.[ID] )
                     LEFT JOIN [Base_Organization] AS A3 ON ( A.[LogisticOrg] = A3.[ID] )
@@ -69,6 +70,7 @@ FROM    ( SELECT    A.[ID] AS [ItemMasterID] ,
 					,b.LotInfo_LotCode AS LotCode--ÅúºÅ
 					,b.ID WhQohID--¿â´æID
                     ,ROW_NUMBER() OVER ( ORDER BY A.[Code] ASC, ( A.[ID] + 17 ) ASC ) AS rownum
+					,b.StorageType,dbo.F_GetEnumName('UFIDA.U9.CBO.Enums.StorageTypeEnum',b.StorageType,'zh-cn')StorageTypeName
           FROM      CBO_ItemMaster AS A INNER JOIN WhQty B ON a.ID=b.ItemMasterID
                     LEFT JOIN Base_UOM AS A1 ON ( A.[InventorySecondUOM] = A1.[ID] )
                     LEFT JOIN CBO_ItemConvertRatioInClass AS A2 ON ( ( A.[ID] = A2.[ItemMaster] )
@@ -91,4 +93,5 @@ FROM    ( SELECT    A.[ID] AS [ItemMasterID] ,
 
 
 
-GO
+
+
