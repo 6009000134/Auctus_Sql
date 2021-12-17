@@ -4,6 +4,7 @@ SELECT
 b.ID--资产标签ID
 ,b.Code--资产标签编码
 ,b.CreatedOn
+,a.StartDate
 ,a.ID CardID--资产卡片ID
 ,a.DocNo--卡片编号
 ,b.AssetLocation,c1.Name--位置
