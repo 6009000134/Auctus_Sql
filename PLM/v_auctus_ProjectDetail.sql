@@ -1,4 +1,5 @@
 
+
 ALTER VIEW v_auctus_ProjectDetail
 AS
 
@@ -33,8 +34,11 @@ t2.RelationId+t2.ParentWork ID
 ,t2.WorkLoad,t2.WorkLoadUnit
 ,t2.FillHour
 ,t2.NormalLimit--正常工期
+,t2.NormalLimitUnit
 ,t2.PlanStartDate--计划开始时间
 ,t2.PlanEndDate--计划结束时间 
+,t2.ActualStartDate
+,t2.ActualEndDate
 ,t2.TaskState
 ,t2.TaskPrincipal
 ,LEFT(t2.PreWork,LEN(t2.PreWork)-1)PreWork
@@ -48,8 +52,11 @@ SELECT a.RelationId,A.RelationType,a.ParentWork,a.ChildWork,a.DisplaySeq,a.Seque
 ,c.WorkCode,c.WorkName--阶段任务名称
 ,c.Principal TaskPrincipal
 ,c.NormalLimit--正常工期
+,c.NormalLimitUnit
 ,c.PlanStartDate--计划开始时间
 ,c.PlanEndDate--计划结束时间
+,c.ActualStartDate
+,c.ActualEndDate
 ,c.State TaskState
 ,c.WorkLoad
 ,ISNULL(d.FillHour,0)FillHour
@@ -70,5 +77,6 @@ GROUP BY a.WorkId) d ON a.ChildWork=d.WorkId
 t2
 --WHERE b.WorkCode='LS138'
 --ORDER BY a.DisplaySeq
+
 
 GO
