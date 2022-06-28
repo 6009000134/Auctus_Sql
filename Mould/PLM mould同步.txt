@@ -1,0 +1,7 @@
+select 
+	1 MailNo,'liufei@auctus.com'  MailTo,'Mould.xml'XmlName 
+	SELECT 1 MailNo,a.Code,a.Name,a.Spec,a.Type,
+	CASE WHEN a.type='ÐÂÔö' THEN 'background-color:red;'
+	WHEN a.type='Ê§Ð§' THEN 'background-color:gray;'
+	END Style
+	FROM Mould_Mail a

@@ -1,9 +1,9 @@
 /*
 检测出货地和线别，若存在则直接同步，不存在则出货地新增，线别不做新增操作
 */
-ALTER  PROC sp_CheckMOData
+ALTER PROCEDURE [dbo].[sp_CheckMOData]
 (
-@Line NVARCHAR(100)
+@Line VARCHAR(20)
 ,@SendPlace NVARCHAR(20)='德国'
 ,@SendPlaceCode VARCHAR(50)='C01'
 )
@@ -41,10 +41,10 @@ BEGIN
 	END  
 END 
 
-IF EXISTS(SELECT 1 FROM dbo.baAssemblyLine a WHERE a.Name=@Line)
+IF EXISTS(SELECT 1 FROM dbo.baAssemblyLine a WHERE a.ID=@Line)
 BEGIN
 	SELECT '1' MsgType,'' Msg
-	SELECT a.ID AssemblyLineID FROM dbo.baAssemblyLine a WHERE a.Name=@Line
+	SELECT a.ID LineID,a.Name LineName FROM dbo.baAssemblyLine a WHERE a.ID=@Line
 END 
 ELSE
 BEGIN
@@ -58,4 +58,4 @@ END
 
 
 
-END 
+END
