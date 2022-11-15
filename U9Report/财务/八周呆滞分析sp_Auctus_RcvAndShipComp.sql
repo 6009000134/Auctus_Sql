@@ -4,7 +4,7 @@
 3、结存数量大于0时，抓出下周需求  下下周需求：看MO和WPO 未发数量
 MRP分类  buyer  mc sourcing"
 */
-ALTER PROC sp_Auctus_RcvAndShipComp
+ALTER PROC [dbo].[sp_Auctus_RcvAndShipComp]
 (
 @Date DATE
 )
@@ -91,6 +91,21 @@ FROM dbo.PM_IssueDoc a INNER JOIN dbo.PM_IssueDocLine b ON a.ID=b.PMIssueDoc
 WHERE a.BusinessCreatedOn>=@SD AND a.BusinessCreatedOn<@ED
 AND a.Org=@Org
 ),
+IssuesNow AS--当周发料
+(
+SELECT a.BusinessCreatedOn,a.ID,a.DocNo,b.LineNum,b.Item,CASE WHEN a.IssueType=0 THEN b.IssuedQty WHEN a.IssueType=1 THEN (-1)*b.IssuedQty ELSE '' END IssuedQty,a.IssueType--0-发料 1-退料 2-挪料 3-超额
+,dbo.fun_GetMondayDate(a.BusinessCreatedOn)Mon
+FROM dbo.MO_IssueDoc a INNER JOIN dbo.MO_IssueDocLine b ON a.ID=b.IssueDoc
+WHERE a.BusinessCreatedOn>=@firstSD AND a.BusinessCreatedOn<@firstED
+AND a.Org=@Org
+UNION ALL
+SELECT 
+a.BusinessCreatedOn,a.ID,a.DocNo,b.LineNum,b.Item,CASE WHEN a.IssueDirection=0 THEN b.IssuedQty WHEN a.IssueDirection=1 THEN (-1)*b.IssuedQty ELSE '' END IssuedQty,a.IssueDirection--0 -领料 1-退料
+,dbo.fun_GetMondayDate(a.BusinessCreatedOn)Mon
+FROM dbo.PM_IssueDoc a INNER JOIN dbo.PM_IssueDocLine b ON a.ID=b.PMIssueDoc
+WHERE a.BusinessCreatedOn>=@firstSD AND a.BusinessCreatedOn<@firstED
+AND a.Org=@Org
+),
 TotalRCV AS
 (
 SELECT 
@@ -124,6 +139,10 @@ SELECT ISNULL(a.ItemInfo_ItemID,b.Item)ItemMaster--mrp.Name,m.Code,m.Name,op1.Na
 ,CONVERT(INT,ISNULL(a.W3,0)) '第三周收',CONVERT(INT,ISNULL(b.W3,0)) '第三周发'
 ,CONVERT(INT,ISNULL(a.W2,0)) '第二周收',CONVERT(INT,ISNULL(b.W2,0)) '第二周发'
 ,CONVERT(INT,ISNULL(a.W1,0)) '第一周收',CONVERT(INT,ISNULL(b.W1,0)) '第一周发'
+,
+CONVERT(INT,(
+SELECT SUM(t1.IssuedQty) FROM IssuesNow t1 WHERE t1.Item=ISNULL(a.ItemInfo_ItemID,b.Item) GROUP BY t1.Item
+))IssuedNow
 --,CASE WHEN a.W0-b.W0>0 THEN (SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=ISNULL(a.ItemInfo_ItemID,b.Item) AND t.pickOfWk=1) ELSE 0 END Demand1
 --,CASE WHEN a.W0-b.W0>0 THEN (SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=ISNULL(a.ItemInfo_ItemID,b.Item))ELSE 0 END  Demand2
 INTO #TempResult
@@ -162,13 +181,13 @@ SELECT * FROM (SELECT  b.ItemMaster,
 SELECT 
 mrp.Name MRP分类,m.Code 料号,m.Name 品名,op1.Name Sourcing,op21.Name Buyer,op31.Name MC
 ,a.*
-,CASE WHEN a.八周结存>0 THEN ISNULL((SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster AND t.pickOfWk=1),0) ELSE 0 END 未来一周需求
-,CASE WHEN a.八周结存>0 THEN ISNULL((SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster),0)ELSE 0 END  未来两周需求
-,a.八周结存-CASE WHEN a.八周结存>0 THEN ISNULL((SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster AND t.pickOfWk=1),0) ELSE 0 END 一周无需求
-,a.八周结存-CASE WHEN a.八周结存>0 THEN ISNULL((SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster ),0) ELSE 0 END 二周无需求
+,CASE WHEN a.八周结存>0 THEN ISNULL((SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster AND t.pickOfWk=1),0)+ISNULL(a.IssuedNow,0)  ELSE 0 END 未来一周需求
+,CASE WHEN a.八周结存>0 THEN ISNULL((SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster),0)+ISNULL(a.IssuedNow,0) ELSE 0 END 未来两周需求
+,a.八周结存-CASE WHEN a.八周结存>0 THEN ISNULL((SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster AND t.pickOfWk=1),0)-ISNULL(a.IssuedNow,0) ELSE 0 END 一周无需求
+,a.八周结存-CASE WHEN a.八周结存>0 THEN ISNULL((SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster ),0)-ISNULL(a.IssuedNow,0) ELSE 0 END  二周无需求
 ,p.Price 采购价,s.StandardPrice 结存价
-,CONVERT(DECIMAL(18,2),ISNULL(p.Price,s.StandardPrice)*(a.八周结存-CASE WHEN a.八周结存>0 THEN ISNULL((SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster AND t.pickOfWk=1),0) ELSE 0 END)) 一周无需求金额
-,CONVERT(DECIMAL(18,2),ISNULL(p.Price,s.StandardPrice)*(a.八周结存-CASE WHEN a.八周结存>0 THEN ISNULL((SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster ),0) ELSE 0 END)) 二周无需求金额
+,CONVERT(DECIMAL(18,2),ISNULL(p.Price,s.StandardPrice)*(a.八周结存-CASE WHEN a.八周结存>0 THEN ISNULL((SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster AND t.pickOfWk=1),0)-ISNULL(a.IssuedNow,0) ELSE 0 END)) 一周无需求金额
+,CONVERT(DECIMAL(18,2),ISNULL(p.Price,s.StandardPrice)*(a.八周结存-CASE WHEN a.八周结存>0 THEN ISNULL((SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster ),0)-ISNULL(a.IssuedNow,0) ELSE 0 END)) 二周无需求金额
 FROM #TempResult a
 LEFT JOIN dbo.CBO_ItemMaster m ON a.ItemMaster=m.ID
 LEFT JOIN dbo.vw_MRPCategory mrp ON m.DescFlexField_PrivateDescSeg22=mrp.Code
@@ -178,7 +197,8 @@ LEFT JOIN dbo.CBO_Operators op3 ON op3.Code=m.DescFlexField_PrivateDescSeg24  LE
 LEFT JOIN PPRData p ON a.ItemMaster=p.ItemMaster
 LEFT JOIN dbo.vw_ItemStandardPrice s ON s.LogTime=(SELECT MAX(LogTime) FROM dbo.vw_ItemStandardPrice) AND s.ItemId=a.ItemMaster
 WHERE PATINDEX('4%',m.Code)=0 AND PATINDEX('5%',m.Code)=0 AND PATINDEX('6%',m.Code)=0 
-ORDER BY  ISNULL(p.Price,s.StandardPrice)*(a.八周结存-CASE WHEN a.八周结存>0 THEN (SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster ) ELSE 0 END) desc
+ORDER BY  ISNULL(p.Price,s.StandardPrice)*(a.八周结存-CASE WHEN a.八周结存>0 THEN (SELECT SUM(t.ReqQty) FROM #TempPick t WHERE t.ItemMaster=a.ItemMaster )-ISNULL(a.IssuedNow,0)  ELSE 0 END) desc
+
 --未来一周需求 未来两周需求  一周无需求 两周无需求 采购价 结存价
 -- 4\5\6打头料号不需要
 
