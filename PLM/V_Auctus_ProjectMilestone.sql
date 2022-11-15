@@ -1,20 +1,19 @@
-
 /*
 项目里程碑
 需求：项目里程碑五大节点取计划完成时间和实际完成时间制成报表，销售员和销售员的上级能查看对应的项目，项目经理和葛笑节以及蔡总可以查看所有项目
 佳美和moto属于葛笑节和曾华扬的客户，这两人及其上级可查看
 */
-ALTER VIEW V_Auctus_ProjectMilestone
-as
+ALTER VIEW [dbo].[V_Auctus_ProjectMilestone]
+AS
 WITH CustomerData AS
 (
-SELECT b.PropertyValue,b.ObjectId,b.ObjectExtendID
+SELECT b.PropertyValue,b.ObjectId,b.ObjectExtendID,a.CategoryId
 FROM PS_ExtendSettings a INNER JOIN PJ_WorkExtend b ON a.SettingsId=b.SettingsId
 WHERE a.ExtendName='客户'
 ),
 SalerData AS
 (
-SELECT b.PropertyValue,b.ObjectId,b.ObjectExtendID
+SELECT b.PropertyValue,b.ObjectId,b.ObjectExtendID,a.CategoryId
 FROM PS_ExtendSettings a INNER JOIN PJ_WorkExtend b ON a.SettingsId=b.SettingsId
 WHERE a.ExtendName='销售员'
 ),
@@ -119,12 +118,15 @@ SELECT a.PID,w.WorkCode ProjectCode,w.WorkName ProjectName,cus.PropertyValue Cus
 ,CASE WHEN ISNULL(a.Seedstock结束日期2,'')='' THEN NULL ELSE FORMAT(CONVERT(DATETIME,a.Seedstock结束日期2),'yyyy-MM-dd')END 实际Seedstock完成日期
 FROM WorkPieces a INNER JOIN dbo.PJ_WorkPiece w ON a.PID=w.WorkId LEFT JOIN dbo.SM_Users b ON w.Principal=b.UserId
 LEFT JOIN dbo.PS_BusinessCategory c ON w.CategoryId=c.CategoryId
-LEFT JOIN dbo.Sys_ValueOption sv ON SV.TypeName='13' AND w.Priority = CONVERT(int,SV.OptionCode)  AND sv.LanguageId=0
-LEFT JOIN CustomerData cus ON a.PID=cus.ObjectId LEFT JOIN SalerData sd ON a.PID=sd.ObjectId
+LEFT JOIN dbo.Sys_ValueOption sv ON SV.TypeName='13' AND w.Priority = CONVERT(INT,SV.OptionCode)  AND sv.LanguageId=0
+LEFT JOIN CustomerData cus ON w.WorkId=cus.ObjectId AND w.CategoryId=cus.CategoryId LEFT JOIN SalerData sd ON w.WorkId=sd.ObjectId AND w.CategoryId=sd.CategoryId
 LEFT JOIN Auctus_OA_User oa ON b.UserName=oa.lastname
 
 
 
 
 
+
 GO
+
+

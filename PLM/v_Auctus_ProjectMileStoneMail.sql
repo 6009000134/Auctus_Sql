@@ -1,20 +1,30 @@
+USE [PLM]
+GO
+
+/****** Object:  View [dbo].[v_Auctus_ProjectMileStoneMail]    Script Date: 2022/10/27 14:39:05 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
 /*
 PLM项目里程碑逾期邮件推送
 需求：项目里程碑五大节点逾期未启动时，推送邮件给对应的销售员,佳美和moto固定推送给葛笑节和曾华扬
 */
 ;
-ALTER VIEW v_Auctus_ProjectMileStoneMail
+ALTER VIEW [dbo].[v_Auctus_ProjectMileStoneMail]
 AS
 
 WITH CustomerData AS
 (
-SELECT b.PropertyValue,b.ObjectId,b.ObjectExtendID
+SELECT b.PropertyValue,b.ObjectId,b.ObjectExtendID,a.CategoryId
 FROM PS_ExtendSettings a INNER JOIN PJ_WorkExtend b ON a.SettingsId=b.SettingsId
 WHERE a.ExtendName='客户'
 ),
 SalerData AS
 (
-SELECT b.PropertyValue,b.ObjectId,b.ObjectExtendID
+SELECT b.PropertyValue,b.ObjectId,b.ObjectExtendID,a.CategoryId
 FROM PS_ExtendSettings a INNER JOIN PJ_WorkExtend b ON a.SettingsId=b.SettingsId
 WHERE a.ExtendName='销售员'
 ),data1 AS
@@ -56,7 +66,7 @@ FROM pcs a LEFT JOIN dbo.PJ_WorkPiece b ON a.PID=b.WorkId LEFT JOIN dbo.PJ_WorkP
 WHERE 1=1
 AND c.WorkName IN ('启动时间','Alpha日期','Beta日期','转量产日期','Seedstock日期','立项评审','转产评审','量产评审')
 ),
-UnDos as
+UnDos AS
 (
 SELECT DISTINCT a.PID FROM ProjectInfo a WHERE ISNULL(a.ActualStartDate,'')=''
 AND CONVERT(DATE,a.PlanStartDate)<=CONVERT(DATE,GETDATE())
@@ -102,10 +112,14 @@ SELECT a.PID,w.WorkCode ProjectCode,w.WorkName ProjectName
 ,CASE WHEN ISNULL(a.Seedstock日期2,'')='' THEN NULL ELSE FORMAT(CONVERT(DATETIME,a.Seedstock日期2),'yyyy-MM-dd')END 实际Seedstock日期
 FROM WorkPieces a INNER JOIN UnDos u ON a.PID=u.PID INNER  JOIN dbo.PJ_WorkPiece w ON a.PID=w.WorkId LEFT JOIN dbo.SM_Users b ON w.Principal=b.UserId
 LEFT JOIN dbo.PS_BusinessCategory c ON w.CategoryId=c.CategoryId
-LEFT JOIN dbo.Sys_ValueOption sv ON SV.TypeName='13' AND w.Priority = CONVERT(int,SV.OptionCode)  AND sv.LanguageId=0
-LEFT JOIN CustomerData cus ON a.PID=cus.ObjectId LEFT JOIN SalerData sd ON a.PID=sd.ObjectId
+LEFT JOIN dbo.Sys_ValueOption sv ON SV.TypeName='13' AND w.Priority = CONVERT(INT,SV.OptionCode)  AND sv.LanguageId=0
+LEFT JOIN CustomerData cus ON w.CategoryId=cus.CategoryId AND  w.WorkId=cus.ObjectId LEFT JOIN SalerData sd ON w.WorkId=sd.ObjectId AND w.CategoryId=sd.CategoryId
 --WHERE w.IsFreeze=0 AND w.State=1
 
 
+
+
+
+GO
 
 
