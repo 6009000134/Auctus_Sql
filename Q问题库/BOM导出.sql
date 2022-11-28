@@ -1,0 +1,74 @@
+SELECT 
+a.MasterCode 顶阶料号,c.VersionCode 版本,a.Level 层级,d.Code 父项料号,d.Name 父项名称
+,d1.Code 子件料号,d1.Name 子件名称
+,dbo.F_GetEnumName('UFIDA.U9.CBO.MFG.Enums.ComponentTypeEnum',a.ComponentType,'zh-cn')子件类型
+,dbo.F_GetEnumName('',d1.ItemFormAttribute,'zh-cn') 料品形态属性
+,a.ThisUsageQty 用量,a.Sequence 顺序,a.SubSeq 替代顺序,a.IssueStyle	发料方式
+FROM dbo.Auctus_NewestBom a 
+LEFT JOIN dbo.CBO_BOMMaster b ON a.BOMMaster=b.ID LEFT JOIN dbo.CBO_BOMVersion c ON b.BOMVersion=c.ID
+LEFT JOIN dbo.CBO_ItemMaster d ON a.PID=d.ID
+LEFT JOIN dbo.CBO_ItemMaster d1 ON a.MID=d1.ID
+WHERE a.MasterCode IN (
+'101010581',
+'101010345',
+'101010347',
+'101010346',
+'101010348',
+'101010350',
+'101010353',
+'101010354',
+'101010355',
+'101010356',
+'101010357',
+'101010147',
+'101010141',
+'101010137',
+'101010142',
+'101010345',
+'101010346',
+'101010347',
+'101010348',
+'101010350',
+'101010181',
+'101010139',
+'101010353',
+'101010354',
+'101010355',
+'101010356',
+'101010357',
+'101010191',
+'101010182',
+'101010146',
+'101010138',
+'101010143',
+'101010140',
+'101010180',
+'101010175',
+'101010173',
+'101010174',
+'101010172',
+'101010177',
+'101010197',
+'101010198',
+'101010199',
+'101010200',
+'101010195',
+'101010196',
+'101010194',
+'101010159',
+'101010160',
+'101010163',
+'101010164',
+'101010161',
+'101010162',
+'101010157',
+'101010158',
+'101010171',
+'101010184',
+'101010185',
+'101010186',
+'101010187',
+'101010183',
+'101010189'
+)
+ORDER BY a.MasterCode,a.Level,a.Sequence,a.SubSeq

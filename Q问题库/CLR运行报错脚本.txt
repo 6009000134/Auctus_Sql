@@ -1,0 +1,34 @@
+﻿解决方案：
+数据库中执行以下脚本：
+1、
+--如果执行此语句报错，未正常查出id，证明需要继续执行步骤2、3、4语句
+
+declare @SNIndex bigint
+exec [dbo].[AllocSerials] @AllocCount = 1, @StartSN = @SNIndex output
+SELECT @SNIndex
+
+2、
+--直接执行
+
+EXEC sp_configure 'clr enabled', 1
+RECONFIGURE WITH OVERRIDE
+GO 
+
+3、
+--将yourdatabasename替换为现场的数据库名，若数据库名是数字开头或为纯数字，则修改为[yourdatabasename]
+
+Alter Database yourdatabasename SET TRUSTWORTHY ON
+Go
+
+4、
+--将yourdatabasename替换为现场的数据库名，若数据库名是数字开头或为纯数字，则修改为[yourdatabasename]
+
+use yourdatabasename
+go
+EXEC dbo.sp_changedbowner @loginame = N'sa', @map = false
+Go
+
+如果执行完步骤2、3、4脚本，执行步骤1脚本不报错，可以正常查出id，证明问题解决。
+若执行完以上，执行步骤1脚本仍报错，尝试重启SQL Server (MSSQLSERVER)服务。
+ 
+以上都不行，则执行delete from [dbo].[UAP_CLR_U9USER]，然后继续执行步骤2、3、4脚本，重启SQL Server (MSSQLSERVER)服务。
