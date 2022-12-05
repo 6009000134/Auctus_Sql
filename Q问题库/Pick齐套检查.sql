@@ -1,8 +1,14 @@
 --WMO-30221115007
-SELECT * FROM dbo.MO_MO a WHERE a.DocNo='AMO-30220916003'
+DECLARE @DocNo VARCHAR(20)='MO-30220916002'
+DECLARE @DocLineNo VARCHAR(1000)='170,12'
+SELECT * FROM dbo.MO_MO a WHERE a.DocNo=@DocNo
 
-SELECT a.ID,a.ItemMaster,a.IssueStyle,a.DocLineNO,a.MOStartSetCheck,a.MOCompleteSetCheck FROM dbo.MO_MOPickList a WHERE a.MO=1002209163727093
+SELECT a.ID,a.ItemMaster,a.IssueStyle,a.DocLineNO,a.MOStartSetCheck,a.MOCompleteSetCheck 
+FROM dbo.MO_MOPickList a WHERE a.MO=1002209160035043
 AND a.IssueStyle=0
+AND a.DocLineNO IN (SELECT strID from dbo.fun_Cust_StrToTable(@DocLineNo))
+--更新开工、完工齐套检查属性
+--UPDATE MO_MOPickList SET MOStartSetCheck=0,MOCompleteSetCheck=0 WHERE MO=(SELECT id FROM dbo.MO_MO a WHERE a.DocNo=@DocNo) AND IssueStyle=0 AND DocLineNO IN (SELECT strID from dbo.fun_Cust_StrToTable(@DocLineNo))
+--UPDATE MO_MOPickList SET MOStartSetCheck=1,MOCompleteSetCheck=1 WHERE MO=(SELECT id FROM dbo.MO_MO a WHERE a.DocNo=@DocNo) AND IssueStyle=0 AND DocLineNO IN (SELECT strID from dbo.fun_Cust_StrToTable(@DocLineNo))
 
-UPDATE MO_MOPickList SET MOStartSetCheck=1,MOCompleteSetCheck=1 WHERE MO=1002209163727093 AND IssueStyle=0 AND DocLineNO IN (0)
 
