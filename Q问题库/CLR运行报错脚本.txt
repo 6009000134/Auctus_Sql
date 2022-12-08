@@ -32,3 +32,21 @@ Go
 若执行完以上，执行步骤1脚本仍报错，尝试重启SQL Server (MSSQLSERVER)服务。
  
 以上都不行，则执行delete from [dbo].[UAP_CLR_U9USER]，然后继续执行步骤2、3、4脚本，重启SQL Server (MSSQLSERVER)服务。
+
+
+
+declare @SNIndex bigint
+exec [dbo].[AllocSerials] @AllocCount = 1, @StartSN = @SNIndex output
+SELECT @SNIndex
+
+delete from [dbo].[UAP_CLR_U9USER]
+
+EXEC sp_configure 'clr enabled', 1
+RECONFIGURE WITH OVERRIDE
+GO 
+Alter Database Test1015 SET TRUSTWORTHY ON
+GO
+use Test1015
+go
+EXEC dbo.sp_changedbowner @loginame = N'sa', @map = false
+Go
