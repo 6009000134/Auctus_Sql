@@ -1,0 +1,17 @@
+问题分析：销售订单，【终止】操作不可逆，【关闭】可以再【打开】。后续操作请注意。
+--研发提供脚本及说明如下：
+--注1：单引号及括号请改为半角状态的。请在脚本中录入订单号后执行。
+--注2：请先在测试环境上验证。验证通过再到正式环境实现。
+--按单号反终止SO
+declare @soDocNo nvarchar(50)
+set @soDocNo='销售订单号' 
+
+update a set a.Cancel_Canceled=0,a.Cancel_CancelDate=NULL,a.Cancel_CancelReason='',a.Cancel_CancelUser=''
+from sm_soshipline a 
+left join sm_soline b on a.soline=b.id
+left join sm_so c on b.so=c.id where c.docno=@soDocNo
+update b set b.IsCancel=0 
+from sm_soline b 
+left join sm_so c on b.so=c.id where c.docno=@soDocNo
+update c set c.Cancel_Canceled=0,c.Cancel_CancelDate=NULL,c.Cancel_CancelReason='',c.Cancel_CancelUser=''
+from sm_so c where c.docno=@soDocNo 

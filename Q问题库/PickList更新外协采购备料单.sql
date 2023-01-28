@@ -49,12 +49,12 @@ AMO-30221111012 SO30202211016-10
 --201010213
 
 
---103010192改成后焊
-SELECT a.ID,a.DemandCode,a.DocNo,m.Code,a.ProductQty,a.TotalCompleteQty FROM dbo.MO_MO a INNER JOIN dbo.CBO_ItemMaster m ON a.ItemMaster=m.ID
-WHERE m.Code IN ('201010652' ,'201010425','201010213','201010651','103010192','')
-AND a.Cancel_Canceled=0 AND a.CreatedOn<'2022-11-14' AND a.DemandCode!=-1 --AND a.DocNo NOT LIKE 'MO%'
-AND a.TotalCompleteQty!=a.ProductQty
-ORDER BY m.Code,a.DocNo
+----103010192改成后焊
+--SELECT a.ID,a.DemandCode,a.DocNo,m.Code,a.ProductQty,a.TotalCompleteQty FROM dbo.MO_MO a INNER JOIN dbo.CBO_ItemMaster m ON a.ItemMaster=m.ID
+--WHERE m.Code IN ('201010652' ,'201010425','201010213','201010651','103010192','')
+--AND a.Cancel_Canceled=0 AND a.CreatedOn<'2022-11-14' AND a.DemandCode!=-1 --AND a.DocNo NOT LIKE 'MO%'
+--AND a.TotalCompleteQty!=a.ProductQty
+--ORDER BY m.Code,a.DocNo
 
 
 --UPDATE dbo.MO_MO SET DemandCode=-1 WHERE  DemandCode='38367' AND TotalCompleteQty!=ProductQty
