@@ -1,0 +1,15 @@
+/*
+配置代理服务
+1、通过http:\\服务器地址\PatchListServerV60\Setup.html 安装代理
+2、安装后修改配置文件 D:\yonyou\U9V60\Portal\AgentConfig 下UFIDA.UBF.SystemManage.AgentConfig.xml和UFIDA.UBF.SystemManage.Leader.xml
+中的localhost改成计算机名
+3、修改host文件，主控服务器和代理服务器的都可以修改
+4、安装完成后应该在服务中有UFSysManageService_6.0
+如果没有，则可能是运行的安装程序不是管理员权限运行，找到D:\yonyou\U9V60\Portal\SysManageServer下的installService.bat，以管理员身份运行
+。安装成功则完成代理服务安装
+*/
+/*
+为用户“AU-SE-U9DB\Administrator”授予的权限不足，无法执行此操作。 (rsAccessDenied)
+去对应服务器打开localhost/Reports 添加对应用户角色
+select * from sys.servers确定Administrator的计算机名是否Au-se-u9db
+*/

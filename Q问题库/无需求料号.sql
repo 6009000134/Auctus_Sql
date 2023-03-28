@@ -1,0 +1,150 @@
+;
+WITH WHInfo AS
+(
+SELECT code,SUM(BalQty)WH FROM dbo.v_Cust_InvInfo4OA GROUP BY Code
+)
+SELECT m.CreatedOn 创建时间,m.Code 料号,m.Name 品名,m.SPECS 规格,(SELECT t.WH FROM WHInfo t WHERE t.code=m.Code)库存 FROM dbo.CBO_ItemMaster m INNER JOIN dbo.Base_Organization o ON m.Org=o.ID
+WHERE o.Code='100' AND( m.Code LIKE '2%') AND m.Effective_IsEffective=1
+AND m.code NOT IN (
+SELECT m.Code
+FROM dbo.SM_SO a INNER JOIN dbo.SM_SOLine b ON a.ID=b.SO
+INNER JOIN dbo.CBO_ItemMaster m ON b.ItemInfo_ItemID=m.ID
+WHERE a.BusinessDate>=DATEADD(YEAR,-1,GETDATE()) AND a.BusinessDate <=GETDATE()
+AND( m.Code LIKE '1%' OR m.code LIKE '2%') AND m.Effective_IsEffective=1
+UNION
+SELECT m.Code
+FROM dbo.SM_ForecastOrder a INNER JOIN dbo.SM_ForecastOrderLine b ON a.ID=b.ForecastOrder
+INNER JOIN dbo.CBO_ItemMaster m ON b.ItemInfo_ItemID=m.ID
+WHERE a.BusinessDate>=DATEADD(YEAR,-1,GETDATE()) AND a.BusinessDate <=GETDATE()
+AND( m.Code LIKE '1%' OR m.code LIKE '2%') AND m.Effective_IsEffective=1
+UNION
+SELECT m.Code
+FROM dbo.PM_PurchaseOrder a INNER JOIN dbo.PM_POLine b ON a.ID=b.PurchaseOrder
+INNER JOIN dbo.CBO_ItemMaster m ON b.ItemInfo_ItemID=m.ID
+WHERE a.BusinessDate>=DATEADD(YEAR,-1,GETDATE()) AND a.BusinessDate <=GETDATE()
+AND( m.Code LIKE '1%' OR m.code LIKE '2%') AND m.Effective_IsEffective=1
+UNION
+SELECT m.Code
+FROM dbo.MO_MO a INNER JOIN dbo.CBO_ItemMaster m ON a.ItemMaster=m.ID
+WHERE a.BusinessDate>=DATEADD(YEAR,-1,GETDATE()) AND a.BusinessDate <=GETDATE()
+AND( m.Code LIKE '1%' OR m.code LIKE '2%') AND m.Effective_IsEffective=1
+UNION
+SELECT m.Code
+FROM dbo.MO_MO a INNER JOIN dbo.CBO_ItemMaster m ON a.ItemMaster=m.ID
+WHERE  a.Cancel_Canceled=0 AND a.DocState!=3
+UNION 
+SELECT m.Code
+FROM dbo.PM_PurchaseOrder a INNER JOIN dbo.PM_POLine b ON a.ID=b.PurchaseOrder
+INNER JOIN dbo.CBO_ItemMaster m ON b.ItemInfo_ItemID=m.ID
+WHERE b.Status NOT IN (3,4,5) AND a.Cancel_Canceled=0
+UNION 
+SELECT m.Code
+FROM dbo.SM_SO a INNER JOIN dbo.SM_SOLine b ON a.ID=b.SO
+INNER JOIN dbo.CBO_ItemMaster m ON b.ItemInfo_ItemID=m.ID
+WHERE a.Cancel_Canceled=0 AND b.Status NOT IN (4,5,6)
+UNION
+SELECT m.Code
+FROM dbo.SM_ForecastOrder a INNER JOIN dbo.SM_ForecastOrderLine b ON a.ID=b.ForecastOrder
+INNER JOIN dbo.CBO_ItemMaster m ON b.ItemInfo_ItemID=m.ID
+WHERE a.Cancel_Canceled=0 AND b.Status!=3
+)
+AND m.Code IN (
+'201010040',
+'201010042',
+'201010113',
+'201010129',
+'201010131',
+'201010132',
+'201010133',
+'201010135',
+'201010136',
+'201010137',
+'201010157',
+'201010190',
+'201010192',
+'201010194',
+'201010220',
+'201010225',
+'201010227',
+'201010230',
+'201010270',
+'201010271',
+'201010278',
+'201010279',
+'201010280',
+'201010281',
+'201010285',
+'201010286',
+'201010287',
+'201010289',
+'201010295',
+'201010296',
+'201010297',
+'201010298',
+'201010299',
+'201010300',
+'201010303',
+'201010304',
+'201010305',
+'201010306',
+'201010313',
+'201010314',
+'201010315',
+'201010316',
+'201010318',
+'201010321',
+'201010322',
+'201010323',
+'201010324',
+'201010325',
+'201010335',
+'201010336',
+'201010337',
+'201010338',
+'201010339',
+'201010364',
+'201010386',
+'201010387',
+'201010388',
+'201010413',
+'201010415',
+'201010417',
+'201010418',
+'201010421',
+'201010423',
+'201010424',
+'201010429',
+'201010430',
+'201010431',
+'201010447',
+'201010453',
+'201010454',
+'201010456',
+'201010471',
+'201010475',
+'201010489',
+'201010493',
+'201010494',
+'201010498',
+'201010502',
+'201010503',
+'201010506',
+'201010509',
+'201010510',
+'201010521',
+'201010522',
+'201010523',
+'201010524',
+'201010532',
+'201010534',
+'201010535',
+'201010561',
+'201010562',
+'201010566',
+'201010574',
+'201010581',
+'201010592',
+'201010656',
+'201010657'
+
+)
