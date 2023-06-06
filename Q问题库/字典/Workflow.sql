@@ -52,3 +52,11 @@ SELECT
 * 
 FROM CS_Workflow_WorkflowDefine a LEFT JOIN dbo.CS_Workflow_OperateFlow b ON a.ID=b.WorkflowDefine
 WHERE a.ID=1001709090019104
+
+SELECT a.ID,
+b1.CurrentStateName,*
+FROM CS_Workflow_FlowInstance a INNER JOIN CS_Workflow_FlowState b ON a.CurrentFlowState=b.ID
+INNER JOIN dbo.CS_Workflow_FlowState_Trl b1 ON b.ID=b1.ID 
+WHERE a.CreatedOn>'2020-01-01'
+--AND (b1.CurrentStateName LIKE '%财务总监%' OR b1.CurrentStateName LIKE '%总监%')
+AND b1.CurrentStateName='财务总监'

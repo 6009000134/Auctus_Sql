@@ -13,3 +13,12 @@
 去对应服务器打开localhost/Reports 添加对应用户角色
 select * from sys.servers确定Administrator的计算机名是否Au-se-u9db
 */
+
+
+
+InstallUtil.exe D:\yonyou\U9V60\Portal\SysManageServer\UFIDA.U9.BS.SysmanageInstall.exe
+手工注册服务
+new-service –Name UFSysManageService_6.0 –DisplayName UFSysManageService_6.0 –BinaryPathName “D:\yonyou\U9V60\Portal\SysManageServer\UFIDA.U9.BS.SysmanageInstall.exe” –StartupType Automatic
+
+手工删除服务(以管理员身份运行cmd)
+sc delete ServicesName
